@@ -14,7 +14,8 @@ import json
 from dash.dependencies import Input, Output
 import pandas as pd
 import pathlib
-
+#import os
+from pathlib import Path
 
 # get relative data folder
 PATH = pathlib.Path(__file__).parent
@@ -30,7 +31,13 @@ gdf2 = pd.read_json(DATA_PATH.joinpath("mozambique_acute_food_insecurity_novembe
 ######## Load the GDP data  ############################################################
 ########################################################################################
 # Load GDP data from the CSV file
-df_gdp = pd.read_csv('..mais/data/1.economic/gdp/API_NY.GDP.MKTP.CD_DS2_en_csv_v2_5728855/API_NY.GDP.MKTP.CD_DS2_en_csv_v2_5728855.csv', skiprows=3)
+
+
+# Get the path to the 'data' directory relative to the current script's location
+gdp_file_path = Path(__file__).parent.parent / 'data' / '1.economic' / 'gdp' / 'API_NY.GDP.MKTP.CD_DS2_en_csv_v2_5728855' / 'API_NY.GDP.MKTP.CD_DS2_en_csv_v2_5728855.csv'
+
+#df_gdp = pd.read_csv(r'Z:\Private\miguel.bambo\datascience\Dash\mais\data\1.economic\gdp\API_NY.GDP.MKTP.CD_DS2_en_csv_v2_5728855\API_NY.GDP.MKTP.CD_DS2_en_csv_v2_5728855.csv', skiprows=3)
+df_gdp = pd.read_csv(gdp_file_path, skiprows=3)
 # Filter the data to only include "Aruba" row
 mozambique_data = df_gdp[df_gdp['Country Name'] == 'Mozambique']
 
@@ -54,10 +61,13 @@ from app import app
 ########################################################################################
 
 # Replace 'your_file_path.json' with the actual file path of your JSON file.
-file_path = '..mais/data/1.economic/food_insecurity/Mozambique-Acute Food Insecurity November 2022.json'
+#file_path = r'Z:\Private\miguel.bambo\datascience\Dash\mais\data\1.economic\food_insecurity\Mozambique-Acute Food Insecurity November 2022.json'
+
+# Get the path to the 'data' directory relative to the current script's location
+gdf_file_path = Path(__file__).parent.parent / 'data' / '1.economic' / 'food_insecurity\Mozambique-Acute Food Insecurity November 2022.json'
 
 # Open the GeoJSON data
-with open(file_path) as f:
+with open(gdf_file_path) as f:
     data = json.load(f)
 
 # Convert the GeoJSON data to a GeoDataFrame
