@@ -51,10 +51,10 @@ gdp_values = list(mozambique_data.values[0][4:])
 # Adding code 
 
 # Import the 'app' instance from app.py
-from app import app
+#from app import app
 
 # Create a new instance of the Dash app for the Economic page
-#app = dash.Dash(__name__)
+app = dash.Dash(__name__)
 
 ########################################################################################
 ######## Load the GeoJSON data for FOOD INSECURITY #####################################
