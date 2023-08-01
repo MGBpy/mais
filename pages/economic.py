@@ -64,7 +64,7 @@ app = dash.Dash(__name__)
 #file_path = r'Z:\Private\miguel.bambo\datascience\Dash\mais\data\1.economic\food_insecurity\Mozambique-Acute Food Insecurity November 2022.json'
 
 # Get the path to the 'data' directory relative to the current script's location
-gdf_file_path = Path(__file__).parent.parent / 'data' / '1.economic' / 'food_insecurity\Mozambique-Acute Food Insecurity November 2022.json'
+gdf_file_path = Path(__file__).parent.parent / 'data' / '1.economic' / 'food_insecurity' / 'Mozambique-Acute Food Insecurity November 2022.json'
 
 # Open the GeoJSON data
 with open(gdf_file_path) as f:
