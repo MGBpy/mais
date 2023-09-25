@@ -1,7 +1,4 @@
-dash==2.11.1
-plotly==5.15.0
+dash==1.0.0
 gunicorn==19.9.0
-pandas
-geopandas
-
-
+pandas==0.23.4
+matplotlib
