@@ -3,3 +3,5 @@ gunicorn==19.9.0
 pandas==0.23.4
 matplotlib
 dash_auth
+dash-core-components
+dash-html-components
