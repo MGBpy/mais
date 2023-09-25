@@ -7,7 +7,7 @@ import plotly.graph_objects as go #Added by @MGB
 
 from utils import Header, make_dash_table
 
-import pathlib
+#import pathlib
 #import additional libraries by @MGB
 import geopandas as gpd
 import json
@@ -16,49 +16,137 @@ import pandas as pd
 import pathlib
 #import os
 from pathlib import Path
+from geopandas import GeoDataFrame # Added by @MGB
+import matplotlib.pyplot as plt # Added by @MGB
+
+# Import libraries to print as PDF
+# #import dash_daq as daq
+# #import weasyprint
+# from dash import DashRenderer
+# from weasyprint import HTML
 
 # get relative data folder
 PATH = pathlib.Path(__file__).parent
 DATA_PATH = PATH.joinpath("../data").resolve()
-
+########################################################################################
 
 df_fund_facts = pd.read_csv(DATA_PATH.joinpath("df_fund_facts.csv"))
 df_price_perf = pd.read_csv(DATA_PATH.joinpath("df_price_perf.csv"))
 df_graph = pd.read_csv(DATA_PATH.joinpath("df_graph.csv")) # Added by @MGB
 gdf2 = pd.read_json(DATA_PATH.joinpath("mozambique_acute_food_insecurity_november_2022.json"))
 
-########################################################################################
-######## Load the GDP data  ############################################################
-########################################################################################
+# 1 ####### Load the GDP (current US$) data  ############################################################
 # Load GDP data from the CSV file
-
-
-# Get the path to the 'data' directory relative to the current script's location
+# Get the path to the 'API_NY.GDP.MKTP.CD_DS2_en_csv_v2_5728855' directory relative to the current script's location
 gdp_file_path = Path(__file__).parent.parent / 'data' / '1.economic' / 'gdp' / 'API_NY.GDP.MKTP.CD_DS2_en_csv_v2_5728855' / 'API_NY.GDP.MKTP.CD_DS2_en_csv_v2_5728855.csv'
-
-#df_gdp = pd.read_csv(r'Z:\Private\miguel.bambo\datascience\Dash\mais\data\1.economic\gdp\API_NY.GDP.MKTP.CD_DS2_en_csv_v2_5728855\API_NY.GDP.MKTP.CD_DS2_en_csv_v2_5728855.csv', skiprows=3)
+# Reading csv file
 df_gdp = pd.read_csv(gdp_file_path, skiprows=3)
-# Filter the data to only include "Aruba" row
+# Filter the data to only include "Mozambique" row
 mozambique_data = df_gdp[df_gdp['Country Name'] == 'Mozambique']
-
 # Extract the years and GDP values from the dataframe
-years = list(mozambique_data.columns[4:])
+years_gdp = list(mozambique_data.columns[4:])
 gdp_values = list(mozambique_data.values[0][4:])
-########################################################################################
-######## END Load the GDP data  ############################################################
-########################################################################################
+# 1 ###### END Load the GDP (current US$) data  ############################################################
 
-# Adding code 
+# 2 ####### Load the GDP per capita (current US$) data  ##################################################
+# Load GDP data from the CSV file
+# Get the path to the 'API_NY.GDP.PCAP.CD_DS2_en_csv_v2_5728786' directory relative to the current script's location
+gdp2_file_path = Path(__file__).parent.parent / 'data' / '1.economic' / 'gdp' / 'API_NY.GDP.PCAP.CD_DS2_en_csv_v2_5728786' / 'API_NY.GDP.PCAP.CD_DS2_en_csv_v2_5728786.csv'
+# Reading csv file
+df_gdp2 = pd.read_csv(gdp2_file_path, skiprows=3)
+# Filter the data to only include "Mozambique" row
+mozambique_data = df_gdp2[df_gdp2['Country Name'] == 'Mozambique']
+# Extract the years and GDP values from the dataframe
+years_gdp2 = list(mozambique_data.columns[4:])
+gdp2_values = list(mozambique_data.values[0][4:])
+# 2 ###### END Load the GDP per capita (current US$) data  ##################################################
 
-# Import the 'app' instance from app.py
-#from app import app
+# 3 ###### Load GDP growth (annual %) ####################################################
+# Load GDP data from the CSV file
+# Get the path to the 'API_NY.GDP.PCAP.CD_DS2_en_csv_v2_5728786' directory relative to the current script's location
+gdp3_file_path = Path(__file__).parent.parent / 'data' / '1.economic' / 'gdp' / 'API_NY.GDP.MKTP.KD.ZG_DS2_en_csv_v2_5728939' / 'API_NY.GDP.MKTP.KD.ZG_DS2_en_csv_v2_5728939.csv'
+# Reading csv file
+df_gdp3 = pd.read_csv(gdp3_file_path, skiprows=3)
+# Filter the data to only include "Mozambique" row
+mozambique_data = df_gdp3[df_gdp3['Country Name'] == 'Mozambique']
+# Extract the years and GDP values from the dataframe
+years_gdp3 = list(mozambique_data.columns[4:])
+gdp3_values = list(mozambique_data.values[0][4:])
+# 3 ###### END Load GDP growth (annual %) ####################################################
 
-# Create a new instance of the Dash app for the Economic page
-app = dash.Dash(__name__)
+# 4 ###### Inflation, Consumer Prices ####################################################
+# Load GDP data from the CSV file
+# Get the path to the 'API_NY.GDP.PCAP.CD_DS2_en_csv_v2_5728786' directory relative to the current script's location
+inflation_file_path = Path(__file__).parent.parent / 'data' / '1.economic' / 'cpi' / 'API_FP.CPI.TOTL.ZG_DS2_en_csv_v2_5728859.csv'
+# Reading csv file
+df_inflation = pd.read_csv(inflation_file_path, skiprows=3)
+# Filter the data to only include "Mozambique" row
+mozambique_data = df_inflation[df_inflation['Country Name'] == 'Mozambique']
+# Extract the years and GDP values from the dataframe
+years_inflation = list(mozambique_data.columns[4:])
+inflation_values = list(mozambique_data.values[0][4:])
+# 4 ###### Inflation, Consumer Prices ####################################################
 
-########################################################################################
-######## Load the GeoJSON data for FOOD INSECURITY #####################################
-########################################################################################
+# 5 ###### START Load youth unemployment ####################################################
+# Load youth unemployment data from the CSV file
+# Get the path to the 'API_NY.GDP.PCAP.CD_DS2_en_csv_v2_5728786' directory relative to the current script's location
+yunemployment_file_path = Path(__file__).parent.parent / 'data' / '1.economic' / 'unemployed_youth' / 'API_SL.UEM.1524.ZS_DS2_en_csv_v2_5729128' / 'API_SL.UEM.1524.ZS_DS2_en_csv_v2_5729128.csv'
+# Reading csv file
+df_yunemployment = pd.read_csv(yunemployment_file_path, skiprows=3)
+# Filter the data to only include "Mozambique" row
+mozambique_data = df_yunemployment[df_yunemployment['Country Name'] == 'Mozambique']
+# Extract the years and youth unemployment values from the dataframe
+years_yunemployment = list(mozambique_data.columns[4:])
+yunemployment_values = list(mozambique_data.values[0][4:])
+# 5 ###### END Load youth unemployment ####################################################
+
+# 6 ###### START Consumer Price Index (CPI) ####################################################
+cpi = pd.read_json(DATA_PATH.joinpath("mozambique_acute_food_insecurity_november_2022.json"))
+# Get the path to the 'data' directory relative to the current script's location
+cpi_file_path = Path(__file__).parent.parent / 'data' / '1.economic' / 'cpi' / 'cpi.json'
+# Open the GeoJSON data
+with open(cpi_file_path) as f:
+    data_cpi = json.load(f)
+
+# Extract data
+xAxisLabels = data_cpi['xAxisLabels']
+firstYAxis = data_cpi['firstYAxis']['values']
+secondYAxis = data_cpi['secondYAxis']['values']
+
+# # Flatten the nested structure in the JSON data using json_normalize
+# #df_cpi = pd.json_normalize(data_cpi)
+# # Extract the 'data' part of the JSON
+# data_x = data_cpi['xAxisLabels']
+
+# # Create a DataFrame from the flattened data
+# xAxisLabels = pd.DataFrame(data_x)
+
+# # Display the resulting DataFrame
+# #print(xAxisLabels)
+
+# #######
+# # Extract the 'data' part of the JSON
+# data_y1 = data_cpi['firstYAxis']
+# data_y1 = data_y1['values']
+# firstYAxis = pd.DataFrame(data_y1)
+
+# # Display the resulting DataFrame
+# #print(firstYAxis)
+
+
+# #######
+# # Extract the 'data' part of the JSON
+# data_y2 = data_cpi['secondYAxis']
+# data_y2 = data_y2['values']
+# secondYAxis = pd.DataFrame(data_y2)
+
+# # Display the resulting DataFrame
+# #print(secondYAxis)
+
+# 6 ###### END Consumer Price Index (CPI) ####################################################
+
+
+#  ####### Load the GeoJSON data for FOOD INSECURITY #####################################
 
 # Replace 'your_file_path.json' with the actual file path of your JSON file.
 #file_path = r'Z:\Private\miguel.bambo\datascience\Dash\mais\data\1.economic\food_insecurity\Mozambique-Acute Food Insecurity November 2022.json'
@@ -76,14 +164,16 @@ gdf = gpd.GeoDataFrame.from_features(data['features'])
 
 # Define custom colors and text labels for each phase
 phase_colors = {
-    1: '#fff7ec',
-    2: '#fdd49e',
-    3: '#fc8d59',
-    4: '#d7301f',
-    5: '#7f0000'
+    0: 'white',
+    1: '#fee8c8',
+    2: '#fc8d59',
+    3: '#d7301f',
+    4: '#7f0000',
+    5: 'black'
 }
 
 phase_labels = {
+    0: '0-Not Analyzed',
     1: '1-Minimal',
     2: '2-Stressed',
     3: '3-Crisis',
@@ -95,9 +185,12 @@ phase_labels = {
 gdf['color'] = gdf['overall_phase_C'].map(phase_colors)
 gdf['phase_label'] = gdf['overall_phase_C'].map(phase_labels)
 
-###################################################################################################
+
 ######## END Load the GeoJSON data for FOOD INSECURITY ############################################
-###################################################################################################
+
+
+# Create a new instance of the Dash app for the Economic page
+app = dash.Dash(__name__)
 
 def create_layout(app):
     # Page layouts
@@ -144,14 +237,15 @@ def create_layout(app):
                     # Row 3.1 #Added by @MGB
                     #####
                     #####
-
+                    html.H6("Annual Reported Indicators", style={'margin-bottom': '0'}), # Header above Horizontal Line
+                    html.Hr(style={'margin-top': '0', 'margin-bottom': '0'}), # Horizontal line with no top margin
 
                     #####
                     #####    
                     html.Div(
                         [
                             html.Div(
-                                [
+                                [   # Chart 1 ##################
                                     html.H6("Food Insecurity: November 2022 - March 2023", className="subtitle padded"),
                                     dcc.Graph(
                                         id="choropleth-map", # Assign a unique id to the graph
@@ -159,7 +253,7 @@ def create_layout(app):
                                         config={"displayModeBar": True, "displaylogo": False},  # Enable the display mode bar and hide the logo
                                         #style={"height": "450px", "margin-bottom": "0px"}  # Set/Adjust the height and margin-bottom of the choropleth map as needed  
                                     ),
-                                    html.P("Source: Integrated Food Security Phase Classification. Last Updated Date: March, 28th 2023.", style={"font-size": "10px", "color": "#888"}),
+                                    html.P(html.A("Source: Integrated Food Security Phase Classification. Last Updated Date: March, 28th 2023.", href='https://www.ipcinfo.org/ipc-country-analysis/details-map/en/c/1155848/?iso3=MOZ', target="_blank", style={"font-size": "10px", "color": "#888"})),
                                 ],
                                 className="twelve columns",
                                 #style={"margin-bottom": "10px"}  # Adjust the margin-bottom to reduce the empty space
@@ -169,8 +263,7 @@ def create_layout(app):
                     ),
                     # Row 4
                     html.Div(
-                        [
-                            #####Insert Hypothetical growth#######
+                        [   ##### Chart 2 #######
                             html.Div(
                                 [
                                     html.H6(
@@ -183,36 +276,10 @@ def create_layout(app):
                                         figure={
                                              "data": [
                                                  go.Scatter(
-                                                    x=years,
+                                                    x=years_gdp,
                                                     y=gdp_values,
                                                     mode='lines',
                                                     marker=dict(size=8),
-                                        #             x=[
-                                        #                 "2008",
-                                        #                 "2009",
-                                        #                 "2010",
-                                        #                 "2011",
-                                        #                 "2012",
-                                        #                 "2013",
-                                        #                 "2014",
-                                        #                 "2015",
-                                        #                 "2016",
-                                        #                 "2017",
-                                        #                 "2018",
-                                        #             ],
-                                        #             y=[
-                                        #                 "10000",
-                                        #                 "7500",
-                                        #                 "9000",
-                                        #                 "10000",
-                                        #                 "10500",
-                                        #                 "11000",
-                                        #                 "14000",
-                                        #                 "18000",
-                                        #                 "19000",
-                                        #                 "20500",
-                                        #                 "24000",
-                                        #             ],
                                                     line={"color": "#97151c"},
                                         #             mode="lines",
                                         #             name="Calibre Index Fund Inv",
@@ -222,8 +289,8 @@ def create_layout(app):
                                                  autosize=True,
                                         #         title="",
                                                  font={"family": "Raleway", "size": 10},
-                                               height=200,
-                                               width=340,
+                                                 height=200,
+                                                 width=340,
                                                  hovermode="closest",
                                         #         legend={
                                         #             "x": -0.0277108433735,
@@ -234,49 +301,252 @@ def create_layout(app):
                                                     "r": 20,
                                                     "t": 20,
                                                     "b": 20,
-                                                    "l": 50,
+                                                    "l": 20,
                                                 },
                                         #         showlegend=True,
-                                        #         xaxis={
-                                        #             "autorange": True,
-                                        #             "linecolor": "rgb(0, 0, 0)",
-                                        #             "linewidth": 1,
-                                        #             "range": [2008, 2018],
-                                        #             "showgrid": False,
-                                        #             "showline": True,
-                                        #             "title": "",
-                                        #             "type": "linear",
-                                        #         },
-                                        #         yaxis={
-                                        #             "autorange": False,
-                                        #             "gridcolor": "rgba(127, 127, 127, 0.2)",
-                                        #             "mirror": False,
-                                        #             "nticks": 4,
-                                        #             "range": [0, 30000],
-                                        #             "showgrid": True,
-                                        #             "showline": True,
-                                        #             "ticklen": 10,
-                                        #             "ticks": "outside",
-                                        #             "title": "$",
-                                        #             "type": "linear",
-                                        #             "zeroline": False,
-                                        #             "zerolinewidth": 4,
-                                        #         },
+                                        
                                              ),
                                          },
                                          config={"displayModeBar": True, "displaylogo": False},  # Enable the display mode bar and hide the logo
                                     ),
-                                    html.P("Source: The World Bank. Last Updated Date: July, 25th 2023.", style={"font-size": "10px", "color": "#888"}),
+                                    html.P(html.A("Source: The World Bank. Last Updated Date: July, 25th 2023.", href='https://data.worldbank.org/indicator/NY.GDP.MKTP.CD?locations=MZ', target="_blank", style={"font-size": "10px", "color": "#888"})),
+                                ],
+                                className="six columns",
+                            ),
+                      
+                            html.Div(
+                                [   ##### Chart 3 #######
+                                    html.H6(
+                                        "GDP per capita (current US$)",
+                                        className="subtitle padded",
+                                    ),
+                                    dcc.Graph(
+                                        id="graph-3",
+                                        figure={
+                                            "data": [
+                                                go.Scatter(
+                                                    x=years_gdp2,
+                                                    y=gdp2_values,
+                                                    mode='lines',
+                                                    marker=dict(size=8),
+                                                    line={"color": "#97151c"},
+                                        #             mode="lines",
+                                        #             name="Calibre Index Fund Inv",                                                   
+                                                ),
+                                            ],
+                                            "layout": go.Layout(
+                                                autosize=True,
+                                                bargap=0.35,
+                                                font={"family": "Raleway", "size": 10},
+                                                height=200,
+                                                width=340,
+                                                hovermode="closest",
+                                                # legend={
+                                                #     "x": -0.0228945952895,
+                                                #     "y": -0.189563896463,
+                                                #     "orientation": "h",
+                                                #     "yanchor": "top",
+                                                # },
+                                                margin={
+                                                    "r": 10,
+                                                    "t": 20,
+                                                    "b": 20,
+                                                    "l": 20,
+                                                },
+                                                #showlegend=True,
+                                                title="",
+                                             
+                                            ),
+                                        },
+                                        config={"displayModeBar": True, "displaylogo": False},  # Enable the display mode bar and hide the logo
+                                    ),
+                                    html.P(html.A("Source: The World Bank. Last Updated Date: July, 25th 2023.", href='https://data.worldbank.org/indicator/NY.GDP.PCAP.CD?locations=MZ', target="_blank", style={"font-size": "10px", "color": "#888"})),
+                                ],
+                                className="six columns",
+                            ),
+                        ],
+                        className="row",
+                        #style={"margin-bottom": "35px"},
+                    ),
+                    
+                    # Row 5
+                    html.Div(
+                        [   ###### Chart 4 ###########
+                            html.Div(
+                                [
+                                    html.H6(
+                                        "GDP growth (annual %)", 
+                                        className="subtitle padded",
+                                    ),
+
+                                    dcc.Graph(
+                                        id="graph-3",
+                                        figure={
+                                            "data": [
+                                                go.Scatter(
+                                                    x=years_gdp3,
+                                                    y=gdp3_values,
+                                                    mode='lines',
+                                                    marker=dict(size=8),
+                                                    line={"color": "#97151c"},
+                                        #             mode="lines",
+                                        #             name="Calibre Index Fund Inv",                                                   
+                                                ),
+                                            ],
+                                         "layout": go.Layout(
+                                                autosize=True,
+                                                bargap=0.35,
+                                                font={"family": "Raleway", "size": 10},
+                                                height=200,
+                                                width=340,
+                                                hovermode="closest",
+                                                # legend={
+                                                #     "x": -0.0228945952895,
+                                                #     "y": -0.189563896463,
+                                                #     "orientation": "h",
+                                                #     "yanchor": "top",
+                                                # },
+                                                margin={
+                                                    "r": 20,
+                                                    "t": 20,
+                                                    "b": 20,
+                                                    "l": 20,
+                                                },
+                                                #showlegend=True,
+                                                title="",
+                                             
+                                            ),
+                                        },
+                                        config={"displayModeBar": True, "displaylogo": False},  # Enable the display mode bar and hide the logo
+
+                                    ),
+                                    html.P(html.A("Source: The World Bank. Last Updated Date: July, 25th 2023.", href='https://data.worldbank.org/indicator/NY.GDP.MKTP.KD.ZG?locations=MZ', target="_blank", style={"font-size": "10px", "color": "#888"})),
+                                ],
+                                className="six columns",
+                            ),
+                           
+                            ###### Chart 5 ###########
+                           html.Div(
+                                [
+                                    html.H6(
+                                        "Inflation, Consumer Prices (annual %)", 
+                                        className="subtitle padded",
+                                    ),
+
+                                    dcc.Graph(
+                                        id="graph-4",
+                                        figure={
+                                            "data": [
+                                                go.Scatter(
+                                                    x=years_inflation,
+                                                    y=inflation_values,
+                                                    mode='lines',
+                                                    marker=dict(size=8),
+                                                    line={"color": "#97151c"},
+                                        #             mode="lines",
+                                        #             name="Calibre Index Fund Inv",                                                   
+                                                ),
+                                            ],
+                                         "layout": go.Layout(
+                                                autosize=True,
+                                                bargap=0.35,
+                                                font={"family": "Raleway", "size": 10},
+                                                height=200,
+                                                width=340,
+                                                hovermode="closest",
+                                                # legend={
+                                                #     "x": -0.0228945952895,
+                                                #     "y": -0.189563896463,
+                                                #     "orientation": "h",
+                                                #     "yanchor": "top",
+                                                # },
+                                                margin={
+                                                    "r": 10,
+                                                    "t": 20,
+                                                    "b": 20,
+                                                    "l": 20,
+                                                },
+                                                #showlegend=True,
+                                                title="",
+                                             
+                                            ),
+                                        },
+                                        config={"displayModeBar": True, "displaylogo": False},  # Enable the display mode bar and hide the logo
+                                    ),
+                                    #html.P("Source: The World Bank. Last Updated Date: July, 25th 2023.", style={"font-size": "10px", "color": "#888"}),
+                                    html.P(html.A("Source: The World Bank. Last Updated Date: July, 25th 2023.", href='https://data.worldbank.org/indicator/FP.CPI.TOTL.ZG?locations=MZ', target="_blank", style={"font-size": "10px", "color": "#888"})),
                                 ],
                                 className="six columns",
                             ),
 
-                            #####End Hypothetical growth#######
+                        
                             
+                          
+                        ],
+                        className="row ",
+                    ), ######### Closing DIV ######### 
+
+                    # Row 6 Repeatition
+                    html.Div(
+                        [   ###### Chart 4 ###########
                             html.Div(
                                 [
                                     html.H6(
-                                        "Average annual performance",
+                                        "Youth Unemployment (% of total labor force ages 15 - 24, modeled ILO estimate)", 
+                                        className="subtitle padded",
+                                    ),
+
+                                    dcc.Graph(
+                                        id="graph-3",
+                                        figure={
+                                            "data": [
+                                                go.Scatter(
+                                                    x=years_yunemployment,
+                                                    y=yunemployment_values,
+                                                    mode='lines',
+                                                    marker=dict(size=8),
+                                                    line={"color": "#97151c"},
+                                        #             mode="lines",
+                                        #             name="Calibre Index Fund Inv",                                                   
+                                                ),
+                                            ],
+                                         "layout": go.Layout(
+                                                autosize=True,
+                                                bargap=0.35,
+                                                font={"family": "Raleway", "size": 10},
+                                                height=200,
+                                                width=340,
+                                                hovermode="closest",
+                                                # legend={
+                                                #     "x": -0.0228945952895,
+                                                #     "y": -0.189563896463,
+                                                #     "orientation": "h",
+                                                #     "yanchor": "top",
+                                                # },
+                                                margin={
+                                                    "r": 20,
+                                                    "t": 20,
+                                                    "b": 20,
+                                                    "l": 20,
+                                                },
+                                                #showlegend=True,
+                                                title="",
+                                             
+                                            ),
+                                        },
+                                        config={"displayModeBar": True, "displaylogo": False},  # Enable the display mode bar and hide the logo
+
+                                    ),
+                                    html.P(html.A("Source: The World Bank. Last Updated Date: September, 5th 2023.", href='https://data.worldbank.org/indicator/SL.UEM.1524.ZS?locations=MZ&most_recent_value_desc=false', target="_blank", style={"font-size": "10px", "color": "#888"})),
+                                ],
+                                className="six columns",
+                            ),
+                           
+                            ###### Chart 5 ###########
+                            html.Div(
+                                [
+                                    html.H6(
+                                        "Consumer Price Index (CPI)",
                                         className="subtitle padded",
                                     ),
                                     dcc.Graph(
@@ -284,56 +554,34 @@ def create_layout(app):
                                         figure={
                                             "data": [
                                                 go.Bar(
-                                                    x=[
-                                                        "1 Year",
-                                                        "3 Year",
-                                                        "5 Year",
-                                                        "10 Year",
-                                                        "41 Year",
-                                                    ],
-                                                    y=[
-                                                        "21.67",
-                                                        "11.26",
-                                                        "15.62",
-                                                        "8.37",
-                                                        "11.11",
-                                                    ],
+                                                    x=xAxisLabels,
+                                                    y=firstYAxis,
                                                     marker={
                                                         "color": "#97151c",
-                                                        "line": {
-                                                            "color": "rgb(255, 255, 255)",
-                                                            "width": 2,
-                                                        },
+                                                        # "line": {
+                                                        #     "color": "rgb(255, 255, 255)",
+                                                        #     "width": 2,
+                                                        # },
                                                     },
-                                                    name="Calibre Index Fund",
+                                                    name="Consumer Price Index",
                                                 ),
-                                                go.Bar(
-                                                    x=[
-                                                        "1 Year",
-                                                        "3 Year",
-                                                        "5 Year",
-                                                        "10 Year",
-                                                        "41 Year",
-                                                    ],
-                                                    y=[
-                                                        "21.83",
-                                                        "11.41",
-                                                        "15.79",
-                                                        "8.50",
-                                                    ],
-                                                    marker={
-                                                        "color": "#dddddd",
-                                                        "line": {
-                                                            "color": "rgb(255, 255, 255)",
-                                                            "width": 2,
-                                                        },
-                                                    },
-                                                    name="S&P 500 Index",
-                                                ),
+                                                # go.Scatter(
+                                                #     x=xAxisLabels,
+                                                #     y=secondYAxis,
+                                                #     mode='lines',
+                                                #     marker={
+                                                #         "color": "#dddddd",
+                                                #         "line": {
+                                                #             "color": "rgb(255, 255, 255)",
+                                                #             "width": 2,
+                                                #         },
+                                                #     },
+                                                #     name="S&P 500 Index",
+                                                # ),
                                             ],
                                             "layout": go.Layout(
                                                 autosize=False,
-                                                bargap=0.35,
+                                                #bargap=0.35,
                                                 font={"family": "Raleway", "size": 10},
                                                 height=200,
                                                 hovermode="closest",
@@ -344,14 +592,17 @@ def create_layout(app):
                                                     "yanchor": "top",
                                                 },
                                                 margin={
-                                                    "r": 0,
+                                                    "r": 10,
                                                     "t": 20,
-                                                    "b": 10,
-                                                    "l": 10,
+                                                    "b": 20,
+                                                    "l": 20,
                                                 },
                                                 showlegend=True,
                                                 title="",
                                                 width=330,
+                                                # xaxis_title='Date',
+                                                # yaxis_title='Value',
+                                                
                                                 xaxis={
                                                     "autorange": True,
                                                     "range": [-0.5, 4.5],
@@ -372,54 +623,177 @@ def create_layout(app):
                                         },
                                         config={"displayModeBar": True, "displaylogo": False},  # Enable the display mode bar and hide the logo
                                     ),
+                                    html.P(html.A("Source: International Monetary Fund (IMF). Last Updated Date: August, 31st 2023.", href='https://www.economy.com/mozambique/consumer-price-index-cpi', target="_blank", style={"font-size": "10px", "color": "#888"})),
+        
                                 ],
-                                className="six columns",
-                            ),
-                        ],
-                        className="row",
-                        style={"margin-bottom": "35px"},
-                    ),
-                    # Row 5
 
-                    html.Div(
-                        [
-                            ###### Hypothetical growth was here###########
-                            html.Div(
-                                [
-                                    html.H6(
-                                        ["Fund Facts"], className="subtitle padded"
-                                    ),
-                                    html.Table(make_dash_table(df_fund_facts)),
-                                ],
                                 className="six columns",
                             ),
-                            ##### Ended Hypothetical growth was here #####
+                            
+                            ###### Chart 5 ###########
+                            
 
-                            html.Div(
-                                [
-                                    html.H6(
-                                        "Price & Performance (%)",
-                                        className="subtitle padded",
-                                    ),
-                                    html.Table(make_dash_table(df_price_perf)),
-                                ],
-                                className="six columns",
-                            ),
-                            html.Div(
-                                [
-                                    html.H6(
-                                        "Risk Potential", className="subtitle padded"
-                                    ),
-                                    html.Img(
-                                        src=app.get_asset_url("risk_reward.png"),
-                                        className="risk-reward",
-                                    ),
-                                ],
-                                className="six columns",
-                            ),
                         ],
                         className="row ",
-                    ),
+                        style={"margin-bottom": "20px"},
+                    ), ######### Closing DIV ######### 
+
+                    # Row 7 Repeatition
+
+                    html.H6("Quarterly Reported Indicators", style={'margin-top': '0', 'margin-bottom': '0'}), # Header above Horizontal Line
+                    html.Hr(style={'margin-top': '0', 'margin-bottom': '0'}), # Horizontal line with no top margin
+
+
+                    html.Div(
+                        [   ###### Chart 4 ###########
+                            html.Div(
+                                [
+                                    html.H6(
+                                        "Youth Unemployment (% of total labor force ages 15 - 24, modeled ILO estimate)", 
+                                        className="subtitle padded",
+                                    ),
+
+                                    dcc.Graph(
+                                        id="graph-3",
+                                        figure={
+                                            "data": [
+                                                go.Scatter(
+                                                    x=years_yunemployment,
+                                                    y=yunemployment_values,
+                                                    mode='lines',
+                                                    marker=dict(size=8),
+                                                    line={"color": "#97151c"},
+                                        #             mode="lines",
+                                        #             name="Calibre Index Fund Inv",                                                   
+                                                ),
+                                            ],
+                                         "layout": go.Layout(
+                                                autosize=True,
+                                                bargap=0.35,
+                                                font={"family": "Raleway", "size": 10},
+                                                height=200,
+                                                width=340,
+                                                hovermode="closest",
+                                                # legend={
+                                                #     "x": -0.0228945952895,
+                                                #     "y": -0.189563896463,
+                                                #     "orientation": "h",
+                                                #     "yanchor": "top",
+                                                # },
+                                                margin={
+                                                    "r": 20,
+                                                    "t": 20,
+                                                    "b": 20,
+                                                    "l": 20,
+                                                },
+                                                #showlegend=True,
+                                                title="",
+                                             
+                                            ),
+                                        },
+                                        config={"displayModeBar": True, "displaylogo": False},  # Enable the display mode bar and hide the logo
+
+                                    ),
+                                    html.P(html.A("Source: The World Bank. Last Updated Date: September, 5th 2023.", href='https://data.worldbank.org/indicator/SL.UEM.1524.ZS?locations=MZ&most_recent_value_desc=false', target="_blank", style={"font-size": "10px", "color": "#888"})),
+                                ],
+                                className="six columns",
+                            ),
+                           
+                            ###### Chart 5 ###########
+                            html.Div(
+                                [
+                                    html.H6(
+                                        "Consumer Price Index (CPI)",
+                                        className="subtitle padded",
+                                    ),
+                                    dcc.Graph(
+                                        id="graph-1",
+                                        figure={
+                                            "data": [
+                                                go.Bar(
+                                                    x=xAxisLabels,
+                                                    y=firstYAxis,
+                                                    marker={
+                                                        "color": "#97151c",
+                                                        # "line": {
+                                                        #     "color": "rgb(255, 255, 255)",
+                                                        #     "width": 2,
+                                                        # },
+                                                    },
+                                                    name="Consumer Price Index",
+                                                ),
+                                                # go.Scatter(
+                                                #     x=xAxisLabels,
+                                                #     y=secondYAxis,
+                                                #     mode='lines',
+                                                #     marker={
+                                                #         "color": "#dddddd",
+                                                #         "line": {
+                                                #             "color": "rgb(255, 255, 255)",
+                                                #             "width": 2,
+                                                #         },
+                                                #     },
+                                                #     name="S&P 500 Index",
+                                                # ),
+                                            ],
+                                            "layout": go.Layout(
+                                                autosize=False,
+                                                #bargap=0.35,
+                                                font={"family": "Raleway", "size": 10},
+                                                height=200,
+                                                hovermode="closest",
+                                                legend={
+                                                    "x": -0.0228945952895,
+                                                    "y": -0.189563896463,
+                                                    "orientation": "h",
+                                                    "yanchor": "top",
+                                                },
+                                                margin={
+                                                    "r": 10,
+                                                    "t": 20,
+                                                    "b": 20,
+                                                    "l": 20,
+                                                },
+                                                showlegend=True,
+                                                title="",
+                                                width=330,
+                                                # xaxis_title='Date',
+                                                # yaxis_title='Value',
+                                                
+                                                xaxis={
+                                                    "autorange": True,
+                                                    "range": [-0.5, 4.5],
+                                                    "showline": True,
+                                                    "title": "",
+                                                    "type": "category",
+                                                },
+                                                yaxis={
+                                                    "autorange": True,
+                                                    "range": [0, 22.9789473684],
+                                                    "showgrid": True,
+                                                    "showline": True,
+                                                    "title": "",
+                                                    "type": "linear",
+                                                    "zeroline": False,
+                                                },
+                                            ),
+                                        },
+                                        config={"displayModeBar": True, "displaylogo": False},  # Enable the display mode bar and hide the logo
+                                    ),
+                                    html.P(html.A("Source: International Monetary Fund (IMF). Last Updated Date: August, 31st 2023.", href='https://www.economy.com/mozambique/consumer-price-index-cpi', target="_blank", style={"font-size": "10px", "color": "#888"})),
+        
+                                ],
+
+                                className="six columns",
+                            ),
+                            
+                            ###### Chart 5 ###########
+                            
+
+                        ],
+                        className="row ",
+                    ), ######### Closing DIV ######### 
+
                 ],
              #],         
             #],
@@ -427,11 +801,13 @@ def create_layout(app):
             ),
         ],
         className="page",
+
+
     )
 
 
 ################################################################################
-###### UPDATING CHOROPLETH MAP #################################################
+###### UPDATING CHOROPLETH MAP GeoJSON data for FOOD INSECURITY ################
 ################################################################################
 
 # Define the callback for the Choropleth Map
@@ -462,34 +838,72 @@ def update_map(clickData):
             showscale=False
         ))
 
-    fig.update_layout(mapbox_style="carto-positron",
-                      mapbox_zoom=3.5,
-                      mapbox_center={"lat": -18.665695, "lon": 35.529562},
-                      mapbox_layers=[]  # Hide default base map layers
-                      )
 
-    # Add legend using annotations with a gray background
+
+    fig.update_layout(mapbox_style="carto-positron", #The valid options for mapbox_style are: "open-street-map", "white-bg", "carto-positron", "carto-darkmatter", "stamen-terrain", "stamen-toner", and "stamen-watercolor"
+                        mapbox_zoom=3.5,
+                        mapbox_center={"lat": -18.665695, "lon": 35.529562},
+                        mapbox_layers=[]  # Hide default base map layers
+                        )
+
+# Add legend using annotations with a gray background
     legend_text = "<br>".join([f"<b><span style='color:{phase_colors[phase]}'>{phase_labels[phase]}</span></b>" for phase in phase_colors.keys()])
     fig.add_annotation(go.layout.Annotation(
-        x=1.03,
+        x=1.01,
         y=0.5,
         xanchor='left',
         yanchor='middle',
         text=legend_text,
         showarrow=False,
         font=dict(color='black', size=12),
-        bgcolor='lightgray',  # Add a gray background
+        bgcolor='#cccccc',  # Add a gray background
         bordercolor='gray',
-        borderwidth=0.5,
-        align='left'
-    ))
+        borderwidth=0.05,
+        align='left',
+        # missing_kwds={
+        # "color": "lightgrey",
+        # "edgecolor": "red",
+        # "hatch": "///",
+        # "label": "Missing values",
+        # }
+        #margin=dict(r=0, #t=20, b=0
+                    #)
+        ))
 
-    fig.update_layout(margin=dict(l=0, r=150, t=20, b=0))  # Adjust the right margin to accommodate the legend
-
+    fig.update_layout(margin=dict(l=0, r=120, t=20, b=0))  # Adjust the right margin to accommodate the legend
     return fig
 
+
+    # START Putting Printing button as PDF
+    # # Access the rendered HTML
+    # rendered_html = DashRenderer(requests_pathname='/', requests_params='').response()
+
+    # # Convert the rendered HTML to PDF
+    # pdf = HTML(string=rendered_html.content).write_pdf("output.pdf")
+    # END Putting Printing button as PDF
+
+
+    ### START Show missing Data ##################################
+    #     # Convert the GeoDataFrame to GeoDataFrame
+    # gdf['color'] = gdf['overall_phase_C'].map(phase_colors)
+
+    # # Plot the GeoDataFrame with assigned colors
+    # ax = gdf.plot(column='color', figsize=(20, 20), missing_kwds={
+    #     "color": "lightgrey",
+    #     "edgecolor": "red",
+    #     "hatch": "///",
+    #     "label": "Missing values",
+    # })
+    # ax.axis('off')
+    # #plt.show()
+    ### END Show missing Data ##################################
+    
+        #return fig
+
+###### UPDATING MAPS ####################################################################
+
 #########################################################################################
-###### ENDING UPDATING CHOROPLETH MAP ###################################################
+###### ENDING UPDATING CHOROPLETH MAP GeoJSON data for FOOD INSECURITY ###################################################
 #########################################################################################
 
 #########################################################################################
