@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
 import dash
+import dash_auth #Added by MGBpy
 #import dash_core_components as dcc #Deprecated
 from dash import dcc
 #import dash_html_components as html #Deprecated
 from dash import html
 from dash.dependencies import Input, Output
 #from utils import load_data, map_phase_to_colors_labels
+
+#PRINTING
+
+#PRINTING
 
 from pages import (
     economic,
@@ -23,6 +28,19 @@ app = dash.Dash(
 app.title = "Mozambique Context Monitoring"
 server = app.server
 
+# #############################################################################################################
+# ################LOG IN#############
+# VALID_USERNAME_PASSWORD_PAIRS = [
+#     ['usaid', 'usaid']
+# ]
+# ###################################
+# #### Authorizing the App ####################################################################################
+
+# auth = dash_auth.BasicAuth(
+#     app,
+#     VALID_USERNAME_PASSWORD_PAIRS
+# )
+# #############################################################################################################
 
 # Describe the layout/ UI of the app
 app.layout = html.Div(
@@ -74,6 +92,14 @@ def display_page(pathname):
     else:
         return economic.create_layout(app)
 
+# START PRINTING
+
+# END PRINTING
+
+
+
 
 if __name__ == "__main__":
     app.run_server(port=8090, debug=True) #Set to True when Deploying the app
+
+
