@@ -1,6 +1,6 @@
 dash==2.11.1
 gunicorn==19.9.0
-pandas==2.0.0
+pandas==2.1.1
 matplotlib==3.7.1
 dash-auth==2.0.0
 dash-core-components==2.0.0
