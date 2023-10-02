@@ -3,55 +3,382 @@ from dash import dcc
 #import dash_html_components as html #Deprecated
 from dash import html
 import plotly.graph_objs as go
-
 from utils import Header, make_dash_table
-
 import pandas as pd
 import pathlib
+from pathlib import Path
 
 # get relative data folder
-PATH = pathlib.Path(__file__).parent
+PATH = Path(__file__).parent
 DATA_PATH = PATH.joinpath("../data").resolve()
 
+#Maternal Mortality Rate Data
+mmr_file_path = Path(__file__).parent.parent / 'data' / '2.social' / 'maternalMortality' / 'API_SH.STA.MMRT_DS2_en_csv_v2_5872348.csv'
+df_mmr = pd.read_csv(mmr_file_path,skiprows=3)
+mozambique_data = df_mmr[df_mmr['Country Name'] == 'Mozambique']
+# Extract the years and GDP values from the dataframe
+years_mmr = list(mozambique_data.columns[43:])
+mmr_values = list(mozambique_data.values[0][43:])
+#End Maternal Mortality Rate Data
 
-df_fund_facts = pd.read_csv(DATA_PATH.joinpath("df_fund_facts.csv"))
-df_price_perf = pd.read_csv(DATA_PATH.joinpath("df_price_perf.csv"))
+#Literacy Rate Data
+litr_file_path = Path(__file__).parent.parent / 'data' / '2.social' / 'literacyRate' / 'API_SE.ADT.LITR.ZS_DS2_en_csv_v2_5871613.csv'
+df_litr = pd.read_csv(litr_file_path,skiprows=3)
+mozambique_data = df_litr[df_litr['Country Name'] == 'Mozambique']
+# Extract the years and GDP values from the dataframe
+years_litr = list(mozambique_data.columns[24:])
+litr_values = list(mozambique_data.values[0][24:])
+# end Literacy Rate Data
+
+df_current_prices = pd.read_csv(DATA_PATH.joinpath("df_current_prices.csv"))
+df_hist_prices = pd.read_csv(DATA_PATH.joinpath("df_hist_prices.csv"))
+df_avg_returns = pd.read_csv(DATA_PATH.joinpath("df_avg_returns.csv"))
+df_after_tax = pd.read_csv(DATA_PATH.joinpath("df_after_tax.csv"))
+df_recent_returns = pd.read_csv(DATA_PATH.joinpath("df_recent_returns.csv"))
+df_graph = pd.read_csv(DATA_PATH.joinpath("df_graph.csv"))
 
 
 def create_layout(app):
-    # Page layouts
     return html.Div(
         [
-            html.Div([Header(app)]),
-            # page 1
+            Header(app),
+            # page 2
             html.Div(
                 [
+                    # Row 1
+                    html.Div(
+                        [
+                            html.Div([
+                                        html.H6("Maternal mortality ratio (modeled estimate, per 100,000 live births)", className="subtitle padded"),
+                                        dcc.Graph(
+                                            id="graph-1",
+                                            figure={
+                                                "data": [
+                                                    go.Scatter(
+                                                        x=years_mmr,
+                                                        y=mmr_values,
+                                                        line={"color": "#97151c"},
+                                                        mode="lines+markers",
+                                                        name="",
+                                                    ),
+                                                    # go.Scatter(
+                                                    #     x=df_graph["Date"],
+                                                    #     y=df_graph[
+                                                    #         "MSCI EAFE Index Fund (ETF)"
+                                                    #     ],
+                                                    #     line={"color": "#b5b5b5"},
+                                                    #     mode="lines",
+                                                    #     name="MSCI EAFE Index Fund (ETF)",
+                                                    # ),
+                                                ],
+                                                "layout": go.Layout(
+                                                    autosize=True,
+                                                     width=340,
+                                                     height=200,
+                                                    font={"family": "Raleway", "size": 10},
+                                                    margin={
+                                                        "r": 30,
+                                                        "t": 30,
+                                                        "b": 30,
+                                                        "l": 30,
+                                                    },
+                                                    showlegend=False,
+                                                    titlefont={
+                                                        "family": "Raleway",
+                                                        "size": 10,
+                                                    },
+                                                    xaxis={
+                                                        "autorange": True,
+                                                        "range": [
+                                                            "2007-12-31",
+                                                            "2018-03-06",
+                                                        ],
+                                                        "rangeselector": {
+                                                            "buttons": [
+                                                                {
+                                                                    "count": 5,
+                                                                    "label": "5Y",
+                                                                    "step": "year",
+                                                                    "stepmode": "backward",
+                                                                },
+                                                                {
+                                                                    "count": 10,
+                                                                    "label": "10Y",
+                                                                    "step": "year",
+                                                                    "stepmode": "backward",
+                                                                },
+                                                                {
+                                                                    "count": 15,
+                                                                    "label": "15Y",
+                                                                    "step": "year",
+                                                                },
+                                                                {
+                                                                    "count": 20,
+                                                                    "label": "20Y",
+                                                                    "step": "year",
+                                                                    "stepmode": "backward",
+                                                                },
+                                                                {
+                                                                    "label": "All",
+                                                                    "step": "all",
+                                                                },
+                                                            ]
+                                                        },
+                                                        "showline": False,
+                                                        "type": "date",
+                                                        "zeroline": False,
+                                                    },
+                                                    yaxis={
+                                                        "autorange": True,
+                                                        "range": [
+                                                            18.6880162434,
+                                                            278.431996757,
+                                                        ],
+                                                        "showline": False,
+                                                        "type": "linear",
+                                                        "zeroline": False,
+                                                    },
+                                                ),
+                                            },
+                                            config={"displayModeBar": False},
+                                        ),
+                                        html.P(html.A("Source: World Bank", href='https://data.worldbank.org/indicator/SH.STA.MMRT?end=2020&locations=MZ&start=2000&view=chart', target="_blank", style={"font-size": "10px", "color": "#888"})),
+                                        
+                                ],
+                                        className = "six columns",
+                            ),
+                            html.Div([  
+                                        html.H6("Literacy rate, adult total (% of people ages 15 and above)", className="subtitle padded"),
+                                        dcc.Graph(
+                                            id="graph-2",
+                                            figure={
+                                                "data": [
+                                                    go.Scatter(
+                                                        x=years_litr,
+                                                        y=litr_values,
+                                                        line={"color": "#97151c"},
+                                                        mode="lines+markers",
+                                                        name="",
+                                                    ),
+                                                    # go.Scatter(
+                                                    #     x=df_graph["Date"],
+                                                    #     y=df_graph[
+                                                    #         "MSCI EAFE Index Fund (ETF)"
+                                                    #     ],
+                                                    #     line={"color": "#b5b5b5"},
+                                                    #     mode="lines",
+                                                    #     name="MSCI EAFE Index Fund (ETF)",
+                                                    # ),
+                                                ],
+                                                "layout": go.Layout(
+                                                    autosize=True,
+                                                     width=340,
+                                                     height=200,
+                                                    font={"family": "Raleway", "size": 10},
+                                                    margin={
+                                                        "r": 30,
+                                                        "t": 30,
+                                                        "b": 30,
+                                                        "l": 30,
+                                                    },
+                                                    showlegend=False,
+                                                    titlefont={
+                                                        "family": "Raleway",
+                                                        "size": 10,
+                                                    },
+                                                    xaxis={
+                                                        "autorange": True,
+                                                        "range": [
+                                                            "2007-12-31",
+                                                            "2018-03-06",
+                                                        ],
+                                                        "rangeselector": {
+                                                            "buttons": [
+                                                                {
+                                                                    "count": 5,
+                                                                    "label": "5Y",
+                                                                    "step": "year",
+                                                                    "stepmode": "backward",
+                                                                },
+                                                                {
+                                                                    "count": 10,
+                                                                    "label": "10Y",
+                                                                    "step": "year",
+                                                                    "stepmode": "backward",
+                                                                },
+                                                                {
+                                                                    "count": 15,
+                                                                    "label": "15Y",
+                                                                    "step": "year",
+                                                                },
+                                                                {
+                                                                    "count": 20,
+                                                                    "label": "20Y",
+                                                                    "step": "year",
+                                                                    "stepmode": "backward",
+                                                                },
+                                                                {
+                                                                    "label": "All",
+                                                                    "step": "all",
+                                                                },
+                                                            ]
+                                                        },
+                                                        "showline": False,
+                                                        "type": "date",
+                                                        "zeroline": False,
+                                                    },
+                                                    yaxis={
+                                                        "autorange": True,
+                                                        "range": [
+                                                            18.6880162434,
+                                                            278.431996757,
+                                                        ],
+                                                        "showline": False,
+                                                        "type": "linear",
+                                                        "zeroline": False,
+                                                    },
+                                                ),
+                                            },
+                                            config={"displayModeBar": False},
+                                        ),
+                                        html.P(html.A("Source: World Bank", href='https://data.worldbank.org/indicator/SE.ADT.LITR.ZS?end=2021&locations=MZ-ZA&name_desc=false&start=1980&view=chart', target="_blank", style={"font-size": "10px", "color": "#888"})),
+
+                                ],
+                                    className="six columns"
+                            ),
+
+                        ],
+                                #className="row",
+                    ),
+                    # Row 2
+                    html.Div(
+                        [
+                            html.Div(
+                                [
+                                    html.H6("Indicator 3", className="subtitle padded"),
+                                    dcc.Graph(
+                                        id="graph-4",
+                                        figure={
+                                            "data": [
+                                                go.Scatter(
+                                                    #x=df_graph["Date"],
+                                                    #y=df_graph["Calibre Index Fund"],
+                                                    line={"color": "#97151c"},
+                                                    mode="lines",
+                                                    name="Calibre Index Fund",
+                                                ),
+                                                go.Scatter(
+                                                    #x=df_graph["Date"],
+                                                    # y=df_graph[
+                                                    #     "MSCI EAFE Index Fund (ETF)"
+                                                    # ],
+                                                    line={"color": "#b5b5b5"},
+                                                    mode="lines",
+                                                    name="MSCI EAFE Index Fund (ETF)",
+                                                ),
+                                            ],
+                                            "layout": go.Layout(
+                                                autosize=True,
+                                                width=340,
+                                                height=200,
+                                                font={"family": "Raleway", "size": 10},
+                                                margin={
+                                                    "r": 30,
+                                                    "t": 30,
+                                                    "b": 30,
+                                                    "l": 30,
+                                                },
+                                                showlegend=True,
+                                                titlefont={
+                                                    "family": "Raleway",
+                                                    "size": 10,
+                                                },
+                                                xaxis={
+                                                    "autorange": True,
+                                                    "range": [
+                                                        "2007-12-31",
+                                                        "2018-03-06",
+                                                    ],
+                                                    "rangeselector": {
+                                                        "buttons": [
+                                                            {
+                                                                "count": 1,
+                                                                "label": "1Y",
+                                                                "step": "year",
+                                                                "stepmode": "backward",
+                                                            },
+                                                            {
+                                                                "count": 3,
+                                                                "label": "3Y",
+                                                                "step": "year",
+                                                                "stepmode": "backward",
+                                                            },
+                                                            {
+                                                                "count": 5,
+                                                                "label": "5Y",
+                                                                "step": "year",
+                                                            },
+                                                            {
+                                                                "count": 10,
+                                                                "label": "10Y",
+                                                                "step": "year",
+                                                                "stepmode": "backward",
+                                                            },
+                                                            {
+                                                                "label": "All",
+                                                                "step": "all",
+                                                            },
+                                                        ]
+                                                    },
+                                                    "showline": True,
+                                                    "type": "date",
+                                                    "zeroline": False,
+                                                },
+                                                yaxis={
+                                                    "autorange": True,
+                                                    "range": [
+                                                        18.6880162434,
+                                                        278.431996757,
+                                                    ],
+                                                    "showline": True,
+                                                    "type": "linear",
+                                                    "zeroline": False,
+                                                },
+                                            ),
+                                        },
+                                        config={"displayModeBar": False},
+                                    ),
+                                ],
+                                className="twelve columns",
+                            )
+                        ],
+                        className="row ",
+                    ),
                     # Row 3
                     html.Div(
                         [
                             html.Div(
                                 [
-                                    html.H5("Product Summary"),
-                                    html.Br([]),
-                                    html.P(
-                                        "\
-                                    As the industry’s first index fund for individual investors, \
-                                    the Calibre Index Fund is a low-cost way to gain diversified exposure \
-                                    to the U.S. equity market. The fund offers exposure to 500 of the \
-                                    largest U.S. companies, which span many different industries and \
-                                    account for about three-fourths of the U.S. stock market’s value. \
-                                    The key risk for the fund is the volatility that comes with its full \
-                                    exposure to the stock market. Because the Calibre Index Fund is broadly \
-                                    diversified within the large-capitalization market, it may be \
-                                    considered a core equity holding in a portfolio.",
-                                        style={"color": "#ffffff"},
-                                        className="row",
+                                    html.H6(
+                                        [
+                                            "Indicator 4"
+                                        ],
+                                        className="subtitle padded",
+                                    ),
+                                    html.Div(
+                                        [
+                                            # html.Table(
+                                            #     make_dash_table(df_avg_returns),
+                                            #     className="tiny-header",
+                                            # )
+                                        ],
+                                        style={"overflow-x": "auto"},
                                     ),
                                 ],
-                                className="product",
+                                className="twelve columns",
                             )
                         ],
-                        className="row",
+                        className="row ",
                     ),
                     # Row 4
                     html.Div(
@@ -59,117 +386,25 @@ def create_layout(app):
                             html.Div(
                                 [
                                     html.H6(
-                                        ["Fund Facts"], className="subtitle padded"
-                                    ),
-                                    html.Table(make_dash_table(df_fund_facts)),
-                                ],
-                                className="six columns",
-                            ),
-                            html.Div(
-                                [
-                                    html.H6(
-                                        "Average annual performance",
+                                        [
+                                            "Indicator 5"
+                                        ],
                                         className="subtitle padded",
                                     ),
-                                    dcc.Graph(
-                                        id="graph-1",
-                                        figure={
-                                            "data": [
-                                                go.Bar(
-                                                    x=[
-                                                        "1 Year",
-                                                        "3 Year",
-                                                        "5 Year",
-                                                        "10 Year",
-                                                        "41 Year",
-                                                    ],
-                                                    y=[
-                                                        "21.67",
-                                                        "11.26",
-                                                        "15.62",
-                                                        "8.37",
-                                                        "11.11",
-                                                    ],
-                                                    marker={
-                                                        "color": "#97151c",
-                                                        "line": {
-                                                            "color": "rgb(255, 255, 255)",
-                                                            "width": 2,
-                                                        },
-                                                    },
-                                                    name="Calibre Index Fund",
-                                                ),
-                                                go.Bar(
-                                                    x=[
-                                                        "1 Year",
-                                                        "3 Year",
-                                                        "5 Year",
-                                                        "10 Year",
-                                                        "41 Year",
-                                                    ],
-                                                    y=[
-                                                        "21.83",
-                                                        "11.41",
-                                                        "15.79",
-                                                        "8.50",
-                                                    ],
-                                                    marker={
-                                                        "color": "#dddddd",
-                                                        "line": {
-                                                            "color": "rgb(255, 255, 255)",
-                                                            "width": 2,
-                                                        },
-                                                    },
-                                                    name="S&P 500 Index",
-                                                ),
-                                            ],
-                                            "layout": go.Layout(
-                                                autosize=False,
-                                                bargap=0.35,
-                                                font={"family": "Raleway", "size": 10},
-                                                height=200,
-                                                hovermode="closest",
-                                                legend={
-                                                    "x": -0.0228945952895,
-                                                    "y": -0.189563896463,
-                                                    "orientation": "h",
-                                                    "yanchor": "top",
-                                                },
-                                                margin={
-                                                    "r": 0,
-                                                    "t": 20,
-                                                    "b": 10,
-                                                    "l": 10,
-                                                },
-                                                showlegend=True,
-                                                title="",
-                                                width=330,
-                                                xaxis={
-                                                    "autorange": True,
-                                                    "range": [-0.5, 4.5],
-                                                    "showline": True,
-                                                    "title": "",
-                                                    "type": "category",
-                                                },
-                                                yaxis={
-                                                    "autorange": True,
-                                                    "range": [0, 22.9789473684],
-                                                    "showgrid": True,
-                                                    "showline": True,
-                                                    "title": "",
-                                                    "type": "linear",
-                                                    "zeroline": False,
-                                                },
-                                            ),
-                                        },
-                                        config={"displayModeBar": False},
+                                    html.Div(
+                                        [
+                                            # html.Table(
+                                            #     make_dash_table(df_after_tax),
+                                            #     className="tiny-header",
+                                            # )
+                                        ],
+                                        style={"overflow-x": "auto"},
                                     ),
                                 ],
-                                className="six columns",
-                            ),
+                                className=" twelve columns",
+                            )
                         ],
-                        className="row",
-                        style={"margin-bottom": "35px"},
+                        className="row ",
                     ),
                     # Row 5
                     html.Div(
@@ -177,118 +412,16 @@ def create_layout(app):
                             html.Div(
                                 [
                                     html.H6(
-                                        "Hypothetical growth of $10,000",
+                                        ["Indicator 6"],
                                         className="subtitle padded",
                                     ),
-                                    dcc.Graph(
-                                        id="graph-2",
-                                        figure={
-                                            "data": [
-                                                go.Scatter(
-                                                    x=[
-                                                        "2008",
-                                                        "2009",
-                                                        "2010",
-                                                        "2011",
-                                                        "2012",
-                                                        "2013",
-                                                        "2014",
-                                                        "2015",
-                                                        "2016",
-                                                        "2017",
-                                                        "2018",
-                                                    ],
-                                                    y=[
-                                                        "10000",
-                                                        "7500",
-                                                        "9000",
-                                                        "10000",
-                                                        "10500",
-                                                        "11000",
-                                                        "14000",
-                                                        "18000",
-                                                        "19000",
-                                                        "20500",
-                                                        "24000",
-                                                    ],
-                                                    line={"color": "#97151c"},
-                                                    mode="lines",
-                                                    name="Calibre Index Fund Inv",
-                                                )
-                                            ],
-                                            "layout": go.Layout(
-                                                autosize=True,
-                                                title="",
-                                                font={"family": "Raleway", "size": 10},
-                                                height=200,
-                                                width=340,
-                                                hovermode="closest",
-                                                legend={
-                                                    "x": -0.0277108433735,
-                                                    "y": -0.142606516291,
-                                                    "orientation": "h",
-                                                },
-                                                margin={
-                                                    "r": 20,
-                                                    "t": 20,
-                                                    "b": 20,
-                                                    "l": 50,
-                                                },
-                                                showlegend=True,
-                                                xaxis={
-                                                    "autorange": True,
-                                                    "linecolor": "rgb(0, 0, 0)",
-                                                    "linewidth": 1,
-                                                    "range": [2008, 2018],
-                                                    "showgrid": False,
-                                                    "showline": True,
-                                                    "title": "",
-                                                    "type": "linear",
-                                                },
-                                                yaxis={
-                                                    "autorange": False,
-                                                    "gridcolor": "rgba(127, 127, 127, 0.2)",
-                                                    "mirror": False,
-                                                    "nticks": 4,
-                                                    "range": [0, 30000],
-                                                    "showgrid": True,
-                                                    "showline": True,
-                                                    "ticklen": 10,
-                                                    "ticks": "outside",
-                                                    "title": "$",
-                                                    "type": "linear",
-                                                    "zeroline": False,
-                                                    "zerolinewidth": 4,
-                                                },
-                                            ),
-                                        },
-                                        config={"displayModeBar": False},
-                                    ),
+                                    # html.Table(
+                                    #     make_dash_table(df_recent_returns),
+                                    #     className="tiny-header",
+                                    # ),
                                 ],
-                                className="six columns",
-                            ),
-                            html.Div(
-                                [
-                                    html.H6(
-                                        "Price & Performance (%)",
-                                        className="subtitle padded",
-                                    ),
-                                    html.Table(make_dash_table(df_price_perf)),
-                                ],
-                                className="six columns",
-                            ),
-                            html.Div(
-                                [
-                                    html.H6(
-                                        "Risk Potential", className="subtitle padded"
-                                    ),
-                                    html.Img(
-                                        src=app.get_asset_url("risk_reward.png"),
-                                        className="risk-reward",
-                                    ),
-                                ],
-                                className="six columns",
-                            ),
+                                className=" twelve columns",
+                            )
                         ],
                         className="row ",
                     ),

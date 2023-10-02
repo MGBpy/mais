@@ -3,249 +3,349 @@ from dash import dcc
 #import dash_html_components as html #Deprecated
 from dash import html
 import plotly.graph_objs as go
-
 from utils import Header, make_dash_table
 import pandas as pd
 import pathlib
+from pathlib import Path
 
 # get relative data folder
-PATH = pathlib.Path(__file__).parent
+PATH = Path(__file__).parent
 DATA_PATH = PATH.joinpath("../data").resolve()
 
-df_equity_char = pd.read_csv(DATA_PATH.joinpath("df_equity_char.csv"))
-df_equity_diver = pd.read_csv(DATA_PATH.joinpath("df_equity_diver.csv"))
+# Political Stability
+#data\3.political\political_stability\P_WGI123896\8337b88c-a595-49a6-b106-d8ed49f52f0e_Data.csv
+ps_file_path = Path(__file__).parent.parent / 'data' / '3.political' / 'political_stability' / 'P_WGI123896' / '8337b88c-a595-49a6-b106-d8ed49f52f0e_Data.csv'
+df_ps = pd.read_csv(ps_file_path)
+print("df_ps")
+ps = df_ps[df_ps['Series Name'] == 'Political Stability and Absence of Violence/Terrorism: Estimate']
+# Extract the years and GDP values from the dataframe
+ps_years = list(ps.columns[4:])
+ps_values = list(ps.values[0][4:])
+
+print("ps_years")
+print("ps_values")
+# END Political Stability
+
+#Literacy Rate Data
+litr_file_path = Path(__file__).parent.parent / 'data' / '2.social' / 'literacyRate' / 'API_SE.ADT.LITR.ZS_DS2_en_csv_v2_5871613.csv'
+df_litr = pd.read_csv(litr_file_path,skiprows=3)
+mozambique_data = df_litr[df_litr['Country Name'] == 'Mozambique']
+# Extract the years and GDP values from the dataframe
+years_litr = list(mozambique_data.columns[24:])
+litr_values = list(mozambique_data.values[0][24:])
+# end Literacy Rate Data
+
+df_current_prices = pd.read_csv(DATA_PATH.joinpath("df_current_prices.csv"))
+df_hist_prices = pd.read_csv(DATA_PATH.joinpath("df_hist_prices.csv"))
+df_avg_returns = pd.read_csv(DATA_PATH.joinpath("df_avg_returns.csv"))
+df_after_tax = pd.read_csv(DATA_PATH.joinpath("df_after_tax.csv"))
+df_recent_returns = pd.read_csv(DATA_PATH.joinpath("df_recent_returns.csv"))
+df_graph = pd.read_csv(DATA_PATH.joinpath("df_graph.csv"))
 
 
 def create_layout(app):
     return html.Div(
         [
             Header(app),
-            # page 3
+            # page 2
             html.Div(
                 [
                     # Row 1
                     html.Div(
                         [
-                            html.Div(
-                                [html.H6(["Portfolio"], className="subtitle padded")],
-                                className="twelve columns",
-                            )
+                            html.Div([
+                                        html.H6("Political Stability", className="subtitle padded"),
+                                        dcc.Graph(
+                                            id="graph-1",
+                                            figure={
+                                                "data": [
+                                                    go.Scatter(
+                                                        x=ps_years,
+                                                        y=ps_values,
+                                                        line={"color": "#97151c"},
+                                                        mode="lines+markers",
+                                                        name="",
+                                                    ),
+                                                    # go.Scatter(
+                                                    #     x=df_graph["Date"],
+                                                    #     y=df_graph[
+                                                    #         "MSCI EAFE Index Fund (ETF)"
+                                                    #     ],
+                                                    #     line={"color": "#b5b5b5"},
+                                                    #     mode="lines",
+                                                    #     name="MSCI EAFE Index Fund (ETF)",
+                                                    # ),
+                                                ],
+                                                "layout": go.Layout(
+                                                    autosize=True,
+                                                     height=200,
+                                                     width=340,
+                                                    font={"family": "Raleway", "size": 10},
+                                                    margin={
+                                                        "r": 30,
+                                                        "t": 30,
+                                                        "b": 30,
+                                                        "l": 30,
+                                                    },
+                                                    showlegend=False,
+                                                    titlefont={
+                                                        "family": "Raleway",
+                                                        "size": 10,
+                                                    },
+                                                    xaxis={
+                                                        "autorange": True,
+                                                        "range": [
+                                                            "2007-12-31",
+                                                            "2018-03-06",
+                                                        ],
+                                                        "rangeselector": {
+                                                            "buttons": [
+                                                                {
+                                                                    "count": 5,
+                                                                    "label": "5Y",
+                                                                    "step": "year",
+                                                                    "stepmode": "backward",
+                                                                },
+                                                                {
+                                                                    "count": 10,
+                                                                    "label": "10Y",
+                                                                    "step": "year",
+                                                                    "stepmode": "backward",
+                                                                },
+                                                                {
+                                                                    "count": 15,
+                                                                    "label": "15Y",
+                                                                    "step": "year",
+                                                                },
+                                                                {
+                                                                    "count": 20,
+                                                                    "label": "20Y",
+                                                                    "step": "year",
+                                                                    "stepmode": "backward",
+                                                                },
+                                                                {
+                                                                    "label": "All",
+                                                                    "step": "all",
+                                                                },
+                                                            ]
+                                                        },
+                                                        "showline": False,
+                                                        "type": "date",
+                                                        "zeroline": False,
+                                                    },
+                                                    yaxis={
+                                                        "autorange": True,
+                                                        "range": [
+                                                            18.6880162434,
+                                                            278.431996757,
+                                                        ],
+                                                        "showline": False,
+                                                        "type": "linear",
+                                                        "zeroline": False,
+                                                    },
+                                                ),
+                                            },
+                                            config={"displayModeBar": False},
+                                        ),
+                                        html.P(html.A("Source: World Bank", href='https://data.worldbank.org/indicator/SH.STA.MMRT?end=2020&locations=MZ&start=2000&view=chart', target="_blank", style={"font-size": "10px", "color": "#888"})),
+                                        
+                                ],
+                                        className = "six columns",
+                            ),
+                            html.Div([  
+                                        html.H6("Literacy rate, adult total (% of people ages 15 and above)", className="subtitle padded"),
+                                        dcc.Graph(
+                                            id="graph-2",
+                                            figure={
+                                                "data": [
+                                                    go.Scatter(
+                                                        x=years_litr,
+                                                        y=litr_values,
+                                                        line={"color": "#97151c"},
+                                                        mode="lines+markers",
+                                                        name="",
+                                                    ),
+                                                    # go.Scatter(
+                                                    #     x=df_graph["Date"],
+                                                    #     y=df_graph[
+                                                    #         "MSCI EAFE Index Fund (ETF)"
+                                                    #     ],
+                                                    #     line={"color": "#b5b5b5"},
+                                                    #     mode="lines",
+                                                    #     name="MSCI EAFE Index Fund (ETF)",
+                                                    # ),
+                                                ],
+                                                "layout": go.Layout(
+                                                    autosize=True,
+                                                     width=340,
+                                                     height=200,
+                                                    font={"family": "Raleway", "size": 10},
+                                                    margin={
+                                                        "r": 30,
+                                                        "t": 30,
+                                                        "b": 30,
+                                                        "l": 30,
+                                                    },
+                                                    showlegend=False,
+                                                    titlefont={
+                                                        "family": "Raleway",
+                                                        "size": 10,
+                                                    },
+                                                    xaxis={
+                                                        "autorange": True,
+                                                        "range": [
+                                                            "2007-12-31",
+                                                            "2018-03-06",
+                                                        ],
+                                                        "rangeselector": {
+                                                            "buttons": [
+                                                                {
+                                                                    "count": 5,
+                                                                    "label": "5Y",
+                                                                    "step": "year",
+                                                                    "stepmode": "backward",
+                                                                },
+                                                                {
+                                                                    "count": 10,
+                                                                    "label": "10Y",
+                                                                    "step": "year",
+                                                                    "stepmode": "backward",
+                                                                },
+                                                                {
+                                                                    "count": 15,
+                                                                    "label": "15Y",
+                                                                    "step": "year",
+                                                                },
+                                                                {
+                                                                    "count": 20,
+                                                                    "label": "20Y",
+                                                                    "step": "year",
+                                                                    "stepmode": "backward",
+                                                                },
+                                                                {
+                                                                    "label": "All",
+                                                                    "step": "all",
+                                                                },
+                                                            ]
+                                                        },
+                                                        "showline": False,
+                                                        "type": "date",
+                                                        "zeroline": False,
+                                                    },
+                                                    yaxis={
+                                                        "autorange": True,
+                                                        "range": [
+                                                            18.6880162434,
+                                                            278.431996757,
+                                                        ],
+                                                        "showline": False,
+                                                        "type": "linear",
+                                                        "zeroline": False,
+                                                    },
+                                                ),
+                                            },
+                                            config={"displayModeBar": False},
+                                        ),
+                                        html.P(html.A("Source: World Bank", href='https://data.worldbank.org/indicator/SE.ADT.LITR.ZS?end=2021&locations=MZ-ZA&name_desc=false&start=1980&view=chart', target="_blank", style={"font-size": "10px", "color": "#888"})),
+
+                                ],
+                                    className="six columns"
+                            ),
+
                         ],
-                        className="rows",
+                                #className="row",
                     ),
                     # Row 2
                     html.Div(
                         [
                             html.Div(
                                 [
-                                    html.P(["Stock style"], style={"color": "#7a7a7a"}),
+                                    html.H6("Indicator 3", className="subtitle padded"),
                                     dcc.Graph(
-                                        id="graph-5",
+                                        id="graph-4",
                                         figure={
                                             "data": [
                                                 go.Scatter(
-                                                    x=["1"],
-                                                    y=["1"],
-                                                    hoverinfo="none",
-                                                    marker={"opacity": 0},
-                                                    mode="markers",
-                                                    name="B",
-                                                )
+                                                    #x=df_graph["Date"],
+                                                    #y=df_graph["Calibre Index Fund"],
+                                                    line={"color": "#97151c"},
+                                                    mode="lines",
+                                                    name="Calibre Index Fund",
+                                                ),
+                                                go.Scatter(
+                                                    #x=df_graph["Date"],
+                                                    # y=df_graph[
+                                                    #     "MSCI EAFE Index Fund (ETF)"
+                                                    # ],
+                                                    line={"color": "#b5b5b5"},
+                                                    mode="lines",
+                                                    name="MSCI EAFE Index Fund (ETF)",
+                                                ),
                                             ],
                                             "layout": go.Layout(
-                                                title="",
-                                                annotations=[
-                                                    {
-                                                        "x": 0.990130093458,
-                                                        "y": 1.00181709504,
-                                                        "align": "left",
-                                                        "font": {
-                                                            "family": "Raleway, sans-serif",
-                                                            "size": 7,
-                                                            "color": "#7a7a7a",
-                                                        },
-                                                        "showarrow": False,
-                                                        "text": "<b>Market<br>Cap</b>",
-                                                        "xref": "x",
-                                                        "yref": "y",
-                                                    },
-                                                    {
-                                                        "x": 1.00001816013,
-                                                        "y": 1.35907755794e-16,
-                                                        "font": {
-                                                            "family": "Raleway, sans-serif",
-                                                            "size": 7,
-                                                            "color": "#7a7a7a",
-                                                        },
-                                                        "showarrow": False,
-                                                        "text": "<b>Style</b>",
-                                                        "xref": "x",
-                                                        "yanchor": "top",
-                                                        "yref": "y",
-                                                    },
-                                                ],
-                                                autosize=False,
-                                                width=200,
-                                                height=150,
-                                                hovermode="closest",
+                                                autosize=True,
+                                                width=340,
+                                                height=200,
+                                                font={"family": "Raleway", "size": 10},
                                                 margin={
                                                     "r": 30,
-                                                    "t": 20,
-                                                    "b": 20,
+                                                    "t": 30,
+                                                    "b": 30,
                                                     "l": 30,
                                                 },
-                                                shapes=[
-                                                    {
-                                                        "fillcolor": "#f9f9f9",
-                                                        "line": {
-                                                            "color": "#ffffff",
-                                                            "width": 0,
-                                                        },
-                                                        "type": "rect",
-                                                        "x0": 0,
-                                                        "x1": 0.33,
-                                                        "xref": "paper",
-                                                        "y0": 0,
-                                                        "y1": 0.33,
-                                                        "yref": "paper",
-                                                    },
-                                                    {
-                                                        "fillcolor": "#f2f2f2",
-                                                        "line": {
-                                                            "color": "#ffffff",
-                                                            "dash": "solid",
-                                                            "width": 0,
-                                                        },
-                                                        "type": "rect",
-                                                        "x0": 0.33,
-                                                        "x1": 0.66,
-                                                        "xref": "paper",
-                                                        "y0": 0,
-                                                        "y1": 0.33,
-                                                        "yref": "paper",
-                                                    },
-                                                    {
-                                                        "fillcolor": "#f9f9f9",
-                                                        "line": {
-                                                            "color": "#ffffff",
-                                                            "width": 0,
-                                                        },
-                                                        "type": "rect",
-                                                        "x0": 0.66,
-                                                        "x1": 0.99,
-                                                        "xref": "paper",
-                                                        "y0": 0,
-                                                        "y1": 0.33,
-                                                        "yref": "paper",
-                                                    },
-                                                    {
-                                                        "fillcolor": "#f2f2f2",
-                                                        "line": {
-                                                            "color": "#ffffff",
-                                                            "width": 0,
-                                                        },
-                                                        "type": "rect",
-                                                        "x0": 0,
-                                                        "x1": 0.33,
-                                                        "xref": "paper",
-                                                        "y0": 0.33,
-                                                        "y1": 0.66,
-                                                        "yref": "paper",
-                                                    },
-                                                    {
-                                                        "fillcolor": "#f9f9f9",
-                                                        "line": {
-                                                            "color": "#ffffff",
-                                                            "width": 0,
-                                                        },
-                                                        "type": "rect",
-                                                        "x0": 0.33,
-                                                        "x1": 0.66,
-                                                        "xref": "paper",
-                                                        "y0": 0.33,
-                                                        "y1": 0.66,
-                                                        "yref": "paper",
-                                                    },
-                                                    {
-                                                        "fillcolor": "#f2f2f2",
-                                                        "line": {
-                                                            "color": "#ffffff",
-                                                            "width": 0,
-                                                        },
-                                                        "type": "rect",
-                                                        "x0": 0.66,
-                                                        "x1": 0.99,
-                                                        "xref": "paper",
-                                                        "y0": 0.33,
-                                                        "y1": 0.66,
-                                                        "yref": "paper",
-                                                    },
-                                                    {
-                                                        "fillcolor": "#f9f9f9",
-                                                        "line": {
-                                                            "color": "#ffffff",
-                                                            "width": 0,
-                                                        },
-                                                        "type": "rect",
-                                                        "x0": 0,
-                                                        "x1": 0.33,
-                                                        "xref": "paper",
-                                                        "y0": 0.66,
-                                                        "y1": 0.99,
-                                                        "yref": "paper",
-                                                    },
-                                                    {
-                                                        "fillcolor": " #97151c",
-                                                        "line": {
-                                                            "color": "#ffffff",
-                                                            "width": 0,
-                                                        },
-                                                        "type": "rect",
-                                                        "x0": 0.33,
-                                                        "x1": 0.66,
-                                                        "xref": "paper",
-                                                        "y0": 0.66,
-                                                        "y1": 0.99,
-                                                        "yref": "paper",
-                                                    },
-                                                    {
-                                                        "fillcolor": "#f9f9f9",
-                                                        "line": {
-                                                            "color": "#ffffff",
-                                                            "width": 0,
-                                                        },
-                                                        "type": "rect",
-                                                        "x0": 0.66,
-                                                        "x1": 0.99,
-                                                        "xref": "paper",
-                                                        "y0": 0.66,
-                                                        "y1": 0.99,
-                                                        "yref": "paper",
-                                                    },
-                                                ],
+                                                showlegend=True,
+                                                titlefont={
+                                                    "family": "Raleway",
+                                                    "size": 10,
+                                                },
                                                 xaxis={
                                                     "autorange": True,
                                                     "range": [
-                                                        0.989694747864,
-                                                        1.00064057995,
+                                                        "2007-12-31",
+                                                        "2018-03-06",
                                                     ],
-                                                    "showgrid": False,
-                                                    "showline": False,
-                                                    "showticklabels": False,
-                                                    "title": "<br>",
-                                                    "type": "linear",
+                                                    "rangeselector": {
+                                                        "buttons": [
+                                                            {
+                                                                "count": 1,
+                                                                "label": "1Y",
+                                                                "step": "year",
+                                                                "stepmode": "backward",
+                                                            },
+                                                            {
+                                                                "count": 3,
+                                                                "label": "3Y",
+                                                                "step": "year",
+                                                                "stepmode": "backward",
+                                                            },
+                                                            {
+                                                                "count": 5,
+                                                                "label": "5Y",
+                                                                "step": "year",
+                                                            },
+                                                            {
+                                                                "count": 10,
+                                                                "label": "10Y",
+                                                                "step": "year",
+                                                                "stepmode": "backward",
+                                                            },
+                                                            {
+                                                                "label": "All",
+                                                                "step": "all",
+                                                            },
+                                                        ]
+                                                    },
+                                                    "showline": True,
+                                                    "type": "date",
                                                     "zeroline": False,
                                                 },
                                                 yaxis={
                                                     "autorange": True,
                                                     "range": [
-                                                        -0.0358637178721,
-                                                        1.06395696354,
+                                                        18.6880162434,
+                                                        278.431996757,
                                                     ],
-                                                    "showgrid": False,
-                                                    "showline": False,
-                                                    "showticklabels": False,
-                                                    "title": "<br>",
+                                                    "showline": True,
                                                     "type": "linear",
                                                     "zeroline": False,
                                                 },
@@ -254,40 +354,33 @@ def create_layout(app):
                                         config={"displayModeBar": False},
                                     ),
                                 ],
-                                className="four columns",
-                            ),
-                            html.Div(
-                                [
-                                    html.P(
-                                        "Calibre Index Fund seeks to track the performance of\
-                        a benchmark index that measures the investment return of large-capitalization stocks."
-                                    ),
-                                    html.P(
-                                        "Learn more about this portfolio's investment strategy and policy."
-                                    ),
-                                ],
-                                className="eight columns middle-aligned",
-                                style={"color": "#696969"},
-                            ),
+                                className="twelve columns",
+                            )
                         ],
                         className="row ",
                     ),
                     # Row 3
-                    html.Br([]),
                     html.Div(
                         [
                             html.Div(
                                 [
                                     html.H6(
-                                        ["Equity characteristics as of 01/31/2018"],
+                                        [
+                                            "Indicator 4"
+                                        ],
                                         className="subtitle padded",
                                     ),
-                                    html.Table(
-                                        make_dash_table(df_equity_char),
-                                        className="tiny-header",
+                                    html.Div(
+                                        [
+                                            # html.Table(
+                                            #     make_dash_table(df_avg_returns),
+                                            #     className="tiny-header",
+                                            # )
+                                        ],
+                                        style={"overflow-x": "auto"},
                                     ),
                                 ],
-                                className=" twelve columns",
+                                className="twelve columns",
                             )
                         ],
                         className="row ",
@@ -298,13 +391,39 @@ def create_layout(app):
                             html.Div(
                                 [
                                     html.H6(
-                                        ["Equity sector diversification"],
+                                        [
+                                            "Indicator 5"
+                                        ],
                                         className="subtitle padded",
                                     ),
-                                    html.Table(
-                                        make_dash_table(df_equity_diver),
-                                        className="tiny-header",
+                                    html.Div(
+                                        [
+                                            # html.Table(
+                                            #     make_dash_table(df_after_tax),
+                                            #     className="tiny-header",
+                                            # )
+                                        ],
+                                        style={"overflow-x": "auto"},
                                     ),
+                                ],
+                                className=" twelve columns",
+                            )
+                        ],
+                        className="row ",
+                    ),
+                    # Row 5
+                    html.Div(
+                        [
+                            html.Div(
+                                [
+                                    html.H6(
+                                        ["Indicator 6"],
+                                        className="subtitle padded",
+                                    ),
+                                    # html.Table(
+                                    #     make_dash_table(df_recent_returns),
+                                    #     className="tiny-header",
+                                    # ),
                                 ],
                                 className=" twelve columns",
                             )

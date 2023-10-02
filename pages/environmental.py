@@ -3,153 +3,344 @@ from dash import dcc
 #import dash_html_components as html #Deprecated
 from dash import html
 import plotly.graph_objs as go
-
 from utils import Header, make_dash_table
 import pandas as pd
 import pathlib
+from pathlib import Path
 
 # get relative data folder
-PATH = pathlib.Path(__file__).parent
+PATH = Path(__file__).parent
 DATA_PATH = PATH.joinpath("../data").resolve()
 
-df_expenses = pd.read_csv(DATA_PATH.joinpath("df_expenses.csv"))
-df_minimums = pd.read_csv(DATA_PATH.joinpath("df_minimums.csv"))
+#Maternal Mortality Rate Data
+mmr_file_path = Path(__file__).parent.parent / 'data' / '2.social' / 'maternalMortality' / 'API_SH.STA.MMRT_DS2_en_csv_v2_5872348.csv'
+df_mmr = pd.read_csv(mmr_file_path,skiprows=3)
+mozambique_data = df_mmr[df_mmr['Country Name'] == 'Mozambique']
+# Extract the years and GDP values from the dataframe
+years_mmr = list(mozambique_data.columns[43:])
+mmr_values = list(mozambique_data.values[0][43:])
+#End Maternal Mortality Rate Data
+
+#Literacy Rate Data
+litr_file_path = Path(__file__).parent.parent / 'data' / '2.social' / 'literacyRate' / 'API_SE.ADT.LITR.ZS_DS2_en_csv_v2_5871613.csv'
+df_litr = pd.read_csv(litr_file_path,skiprows=3)
+mozambique_data = df_litr[df_litr['Country Name'] == 'Mozambique']
+# Extract the years and GDP values from the dataframe
+years_litr = list(mozambique_data.columns[24:])
+litr_values = list(mozambique_data.values[0][24:])
+# end Literacy Rate Data
+
+df_current_prices = pd.read_csv(DATA_PATH.joinpath("df_current_prices.csv"))
+df_hist_prices = pd.read_csv(DATA_PATH.joinpath("df_hist_prices.csv"))
+df_avg_returns = pd.read_csv(DATA_PATH.joinpath("df_avg_returns.csv"))
+df_after_tax = pd.read_csv(DATA_PATH.joinpath("df_after_tax.csv"))
+df_recent_returns = pd.read_csv(DATA_PATH.joinpath("df_recent_returns.csv"))
+df_graph = pd.read_csv(DATA_PATH.joinpath("df_graph.csv"))
 
 
 def create_layout(app):
     return html.Div(
         [
             Header(app),
-            # page 4
+            # page 2
             html.Div(
                 [
                     # Row 1
                     html.Div(
                         [
-                            html.Div(
-                                [html.H6(["Expenses"], className="subtitle padded")],
-                                className="twelve columns",
-                            )
+                            html.Div([
+                                        html.H6("Maternal mortality ratio (modeled estimate, per 100,000 live births)", className="subtitle padded"),
+                                        dcc.Graph(
+                                            id="graph-1",
+                                            figure={
+                                                "data": [
+                                                    go.Scatter(
+                                                        x=years_mmr,
+                                                        y=mmr_values,
+                                                        line={"color": "#97151c"},
+                                                        mode="lines+markers",
+                                                        name="",
+                                                    ),
+                                                    # go.Scatter(
+                                                    #     x=df_graph["Date"],
+                                                    #     y=df_graph[
+                                                    #         "MSCI EAFE Index Fund (ETF)"
+                                                    #     ],
+                                                    #     line={"color": "#b5b5b5"},
+                                                    #     mode="lines",
+                                                    #     name="MSCI EAFE Index Fund (ETF)",
+                                                    # ),
+                                                ],
+                                                "layout": go.Layout(
+                                                    autosize=True,
+                                                     width=340,
+                                                     height=200,
+                                                    font={"family": "Raleway", "size": 10},
+                                                    margin={
+                                                        "r": 30,
+                                                        "t": 30,
+                                                        "b": 30,
+                                                        "l": 30,
+                                                    },
+                                                    showlegend=False,
+                                                    titlefont={
+                                                        "family": "Raleway",
+                                                        "size": 10,
+                                                    },
+                                                    xaxis={
+                                                        "autorange": True,
+                                                        "range": [
+                                                            "2007-12-31",
+                                                            "2018-03-06",
+                                                        ],
+                                                        "rangeselector": {
+                                                            "buttons": [
+                                                                {
+                                                                    "count": 5,
+                                                                    "label": "5Y",
+                                                                    "step": "year",
+                                                                    "stepmode": "backward",
+                                                                },
+                                                                {
+                                                                    "count": 10,
+                                                                    "label": "10Y",
+                                                                    "step": "year",
+                                                                    "stepmode": "backward",
+                                                                },
+                                                                {
+                                                                    "count": 15,
+                                                                    "label": "15Y",
+                                                                    "step": "year",
+                                                                },
+                                                                {
+                                                                    "count": 20,
+                                                                    "label": "20Y",
+                                                                    "step": "year",
+                                                                    "stepmode": "backward",
+                                                                },
+                                                                {
+                                                                    "label": "All",
+                                                                    "step": "all",
+                                                                },
+                                                            ]
+                                                        },
+                                                        "showline": False,
+                                                        "type": "date",
+                                                        "zeroline": False,
+                                                    },
+                                                    yaxis={
+                                                        "autorange": True,
+                                                        "range": [
+                                                            18.6880162434,
+                                                            278.431996757,
+                                                        ],
+                                                        "showline": False,
+                                                        "type": "linear",
+                                                        "zeroline": False,
+                                                    },
+                                                ),
+                                            },
+                                            config={"displayModeBar": False},
+                                        ),
+                                        html.P(html.A("Source: World Bank", href='https://data.worldbank.org/indicator/SH.STA.MMRT?end=2020&locations=MZ&start=2000&view=chart', target="_blank", style={"font-size": "10px", "color": "#888"})),
+                                        
+                                ],
+                                        className = "six columns",
+                            ),
+                            html.Div([  
+                                        html.H6("Literacy rate, adult total (% of people ages 15 and above)", className="subtitle padded"),
+                                        dcc.Graph(
+                                            id="graph-2",
+                                            figure={
+                                                "data": [
+                                                    go.Scatter(
+                                                        x=years_litr,
+                                                        y=litr_values,
+                                                        line={"color": "#97151c"},
+                                                        mode="lines+markers",
+                                                        name="",
+                                                    ),
+                                                    # go.Scatter(
+                                                    #     x=df_graph["Date"],
+                                                    #     y=df_graph[
+                                                    #         "MSCI EAFE Index Fund (ETF)"
+                                                    #     ],
+                                                    #     line={"color": "#b5b5b5"},
+                                                    #     mode="lines",
+                                                    #     name="MSCI EAFE Index Fund (ETF)",
+                                                    # ),
+                                                ],
+                                                "layout": go.Layout(
+                                                    autosize=True,
+                                                     width=340,
+                                                     height=200,
+                                                    font={"family": "Raleway", "size": 10},
+                                                    margin={
+                                                        "r": 30,
+                                                        "t": 30,
+                                                        "b": 30,
+                                                        "l": 30,
+                                                    },
+                                                    showlegend=False,
+                                                    titlefont={
+                                                        "family": "Raleway",
+                                                        "size": 10,
+                                                    },
+                                                    xaxis={
+                                                        "autorange": True,
+                                                        "range": [
+                                                            "2007-12-31",
+                                                            "2018-03-06",
+                                                        ],
+                                                        "rangeselector": {
+                                                            "buttons": [
+                                                                {
+                                                                    "count": 5,
+                                                                    "label": "5Y",
+                                                                    "step": "year",
+                                                                    "stepmode": "backward",
+                                                                },
+                                                                {
+                                                                    "count": 10,
+                                                                    "label": "10Y",
+                                                                    "step": "year",
+                                                                    "stepmode": "backward",
+                                                                },
+                                                                {
+                                                                    "count": 15,
+                                                                    "label": "15Y",
+                                                                    "step": "year",
+                                                                },
+                                                                {
+                                                                    "count": 20,
+                                                                    "label": "20Y",
+                                                                    "step": "year",
+                                                                    "stepmode": "backward",
+                                                                },
+                                                                {
+                                                                    "label": "All",
+                                                                    "step": "all",
+                                                                },
+                                                            ]
+                                                        },
+                                                        "showline": False,
+                                                        "type": "date",
+                                                        "zeroline": False,
+                                                    },
+                                                    yaxis={
+                                                        "autorange": True,
+                                                        "range": [
+                                                            18.6880162434,
+                                                            278.431996757,
+                                                        ],
+                                                        "showline": False,
+                                                        "type": "linear",
+                                                        "zeroline": False,
+                                                    },
+                                                ),
+                                            },
+                                            config={"displayModeBar": False},
+                                        ),
+                                        html.P(html.A("Source: World Bank", href='https://data.worldbank.org/indicator/SE.ADT.LITR.ZS?end=2021&locations=MZ-ZA&name_desc=false&start=1980&view=chart', target="_blank", style={"font-size": "10px", "color": "#888"})),
+
+                                ],
+                                    className="six columns"
+                            ),
+
                         ],
-                        className="row ",
+                                #className="row",
                     ),
                     # Row 2
                     html.Div(
                         [
                             html.Div(
                                 [
-                                    html.Strong(),
-                                    html.Table(make_dash_table(df_expenses)),
-                                    html.H6(["Minimums"], className="subtitle padded"),
-                                    html.Table(make_dash_table(df_minimums)),
-                                ],
-                                className="six columns",
-                            ),
-                            html.Div(
-                                [
-                                    html.Br([]),
-                                    html.Strong(
-                                        "Fees on $10,000 invested over 10 years",
-                                        style={"color": "#3a3a3a"},
-                                    ),
+                                    html.H6("Indicator 3", className="subtitle padded"),
                                     dcc.Graph(
-                                        id="graph-6",
+                                        id="graph-4",
                                         figure={
                                             "data": [
-                                                go.Bar(
-                                                    x=["Category Average", "This fund"],
-                                                    y=["2242", "329"],
-                                                    marker={"color": "#97151c"},
-                                                    name="A",
+                                                go.Scatter(
+                                                    #x=df_graph["Date"],
+                                                    #y=df_graph["Calibre Index Fund"],
+                                                    line={"color": "#97151c"},
+                                                    mode="lines",
+                                                    name="Calibre Index Fund",
                                                 ),
-                                                go.Bar(
-                                                    x=["This fund"],
-                                                    y=["1913"],
-                                                    marker={"color": " #dddddd"},
-                                                    name="B",
+                                                go.Scatter(
+                                                    #x=df_graph["Date"],
+                                                    # y=df_graph[
+                                                    #     "MSCI EAFE Index Fund (ETF)"
+                                                    # ],
+                                                    line={"color": "#b5b5b5"},
+                                                    mode="lines",
+                                                    name="MSCI EAFE Index Fund (ETF)",
                                                 ),
                                             ],
                                             "layout": go.Layout(
-                                                annotations=[
-                                                    {
-                                                        "x": -0.0111111111111,
-                                                        "y": 2381.92771084,
-                                                        "font": {
-                                                            "color": "#7a7a7a",
-                                                            "family": "Arial sans serif",
-                                                            "size": 8,
-                                                        },
-                                                        "showarrow": False,
-                                                        "text": "$2,242",
-                                                        "xref": "x",
-                                                        "yref": "y",
-                                                    },
-                                                    {
-                                                        "x": 0.995555555556,
-                                                        "y": 509.638554217,
-                                                        "font": {
-                                                            "color": "#7a7a7a",
-                                                            "family": "Arial sans serif",
-                                                            "size": 8,
-                                                        },
-                                                        "showarrow": False,
-                                                        "text": "$329",
-                                                        "xref": "x",
-                                                        "yref": "y",
-                                                    },
-                                                    {
-                                                        "x": 0.995551020408,
-                                                        "y": 1730.32432432,
-                                                        "font": {
-                                                            "color": "#7a7a7a",
-                                                            "family": "Arial sans serif",
-                                                            "size": 8,
-                                                        },
-                                                        "showarrow": False,
-                                                        "text": "You save<br><b>$1,913</b>",
-                                                        "xref": "x",
-                                                        "yref": "y",
-                                                    },
-                                                ],
-                                                autosize=False,
-                                                height=260,
-                                                width=320,
-                                                bargap=0.4,
-                                                barmode="stack",
-                                                hovermode="closest",
+                                                autosize=True,
+                                                width=340,
+                                                height=200,
+                                                font={"family": "Raleway", "size": 10},
                                                 margin={
-                                                    "r": 40,
-                                                    "t": 20,
-                                                    "b": 20,
-                                                    "l": 40,
+                                                    "r": 30,
+                                                    "t": 30,
+                                                    "b": 30,
+                                                    "l": 30,
                                                 },
-                                                showlegend=False,
-                                                title="",
+                                                showlegend=True,
+                                                titlefont={
+                                                    "family": "Raleway",
+                                                    "size": 10,
+                                                },
                                                 xaxis={
                                                     "autorange": True,
-                                                    "range": [-0.5, 1.5],
-                                                    "showline": True,
-                                                    "tickfont": {
-                                                        "family": "Arial sans serif",
-                                                        "size": 8,
+                                                    "range": [
+                                                        "2007-12-31",
+                                                        "2018-03-06",
+                                                    ],
+                                                    "rangeselector": {
+                                                        "buttons": [
+                                                            {
+                                                                "count": 1,
+                                                                "label": "1Y",
+                                                                "step": "year",
+                                                                "stepmode": "backward",
+                                                            },
+                                                            {
+                                                                "count": 3,
+                                                                "label": "3Y",
+                                                                "step": "year",
+                                                                "stepmode": "backward",
+                                                            },
+                                                            {
+                                                                "count": 5,
+                                                                "label": "5Y",
+                                                                "step": "year",
+                                                            },
+                                                            {
+                                                                "count": 10,
+                                                                "label": "10Y",
+                                                                "step": "year",
+                                                                "stepmode": "backward",
+                                                            },
+                                                            {
+                                                                "label": "All",
+                                                                "step": "all",
+                                                            },
+                                                        ]
                                                     },
-                                                    "title": "",
-                                                    "type": "category",
+                                                    "showline": True,
+                                                    "type": "date",
                                                     "zeroline": False,
                                                 },
                                                 yaxis={
-                                                    "autorange": False,
-                                                    "mirror": False,
-                                                    "nticks": 3,
-                                                    "range": [0, 3000],
-                                                    "showgrid": True,
+                                                    "autorange": True,
+                                                    "range": [
+                                                        18.6880162434,
+                                                        278.431996757,
+                                                    ],
                                                     "showline": True,
-                                                    "tickfont": {
-                                                        "family": "Arial sans serif",
-                                                        "size": 10,
-                                                    },
-                                                    "tickprefix": "$",
-                                                    "title": "",
                                                     "type": "linear",
                                                     "zeroline": False,
                                                 },
@@ -158,8 +349,8 @@ def create_layout(app):
                                         config={"displayModeBar": False},
                                     ),
                                 ],
-                                className="six columns",
-                            ),
+                                className="twelve columns",
+                            )
                         ],
                         className="row ",
                     ),
@@ -168,174 +359,71 @@ def create_layout(app):
                         [
                             html.Div(
                                 [
-                                    html.H6(["Fees"], className="subtitle"),
-                                    html.Br([]),
-                                    html.Div(
+                                    html.H6(
                                         [
-                                            html.Div(
-                                                [
-                                                    html.Div(
-                                                        [
-                                                            html.Strong(
-                                                                ["Purchase fee"],
-                                                                style={
-                                                                    "color": "#515151"
-                                                                },
-                                                            )
-                                                        ],
-                                                        className="three columns right-aligned",
-                                                    ),
-                                                    html.Div(
-                                                        [
-                                                            html.P(
-                                                                ["None"],
-                                                                style={
-                                                                    "color": "#7a7a7a"
-                                                                },
-                                                            )
-                                                        ],
-                                                        className="nine columns",
-                                                    ),
-                                                ],
-                                                className="row",
-                                                style={
-                                                    "background-color": "#f9f9f9",
-                                                    "padding-top": "20px",
-                                                },
-                                            ),
-                                            html.Div(
-                                                [
-                                                    html.Div(
-                                                        [
-                                                            html.Strong(
-                                                                ["Redemption fee"],
-                                                                style={
-                                                                    "color": "#515151"
-                                                                },
-                                                            )
-                                                        ],
-                                                        className="three columns right-aligned",
-                                                    ),
-                                                    html.Div(
-                                                        [
-                                                            html.P(
-                                                                ["None"],
-                                                                style={
-                                                                    "color": "#7a7a7a"
-                                                                },
-                                                            )
-                                                        ],
-                                                        className="nine columns",
-                                                    ),
-                                                ],
-                                                className="row",
-                                                style={"background-color": "#f9f9f9"},
-                                            ),
-                                            html.Div(
-                                                [
-                                                    html.Div(
-                                                        [
-                                                            html.Strong(
-                                                                ["12b-1 fee"],
-                                                                style={
-                                                                    "color": "#515151"
-                                                                },
-                                                            )
-                                                        ],
-                                                        className="three columns right-aligned",
-                                                    ),
-                                                    html.Div(
-                                                        [
-                                                            html.P(
-                                                                ["None"],
-                                                                style={
-                                                                    "color": "#7a7a7a"
-                                                                },
-                                                            )
-                                                        ],
-                                                        className="nine columns",
-                                                    ),
-                                                ],
-                                                className="row",
-                                                style={"background-color": "#f9f9f9"},
-                                            ),
+                                            "Indicator 4"
                                         ],
-                                        className="fees",
+                                        className="subtitle padded",
                                     ),
                                     html.Div(
                                         [
-                                            html.Div(
-                                                [
-                                                    html.Strong(
-                                                        ["Account service fee"],
-                                                        style={"color": "#515151"},
-                                                    )
-                                                ],
-                                                className="three columns right-aligned",
-                                            ),
-                                            html.Div(
-                                                [
-                                                    html.Strong(
-                                                        [
-                                                            "Nonretirement accounts, traditional IRAs, Roth IRAs, UGMAs/UTMAs, SEP-IRAs, and education savings accounts (ESAs)"
-                                                        ],
-                                                        style={"color": "#515151"},
-                                                    ),
-                                                    html.P(
-                                                        [
-                                                            "We charge a $20 annual account service fee for each Brokerage Account, as well as each individual mutual fund holding with a balance of less than $10,000 in an account. This fee does not apply if you sign up for account and choose electronic delivery of statements, confirmations, and fund reports and prospectuses. This fee also does not apply to members of Flagship Select™, Flagship®, Voyager Select®, and Voyager® Services."
-                                                        ],
-                                                        style={"color": "#7a7a7a"},
-                                                    ),
-                                                    html.Br([]),
-                                                    html.Strong(
-                                                        ["SIMPLE IRAs"],
-                                                        style={"color": "#515151"},
-                                                    ),
-                                                    html.P(
-                                                        [
-                                                            "We charge participants a $25 annual account service fee for each fund they hold in their SIMPLE IRA. This fee does not apply to members of Flagship Select, Flagship, Voyager Select, and Voyager Services."
-                                                        ],
-                                                        style={"color": "#7a7a7a"},
-                                                    ),
-                                                    html.Br([]),
-                                                    html.Strong(
-                                                        ["403(b)(7) plans"],
-                                                        style={"color": "#515151"},
-                                                    ),
-                                                    html.P(
-                                                        [
-                                                            "We charge participants a $15 annual account service fee for each fund they hold in their 403(b)(7) account. This fee does not apply to members of Flagship Select, Flagship, Voyager Select, and Voyager Services."
-                                                        ],
-                                                        style={"color": "#7a7a7a"},
-                                                    ),
-                                                    html.Br([]),
-                                                    html.Strong(
-                                                        ["Individual 401(k) plans"],
-                                                        style={"color": "#515151"},
-                                                    ),
-                                                    html.P(
-                                                        [
-                                                            "We charge participants a $20 annual account service fee for each fund they hold in their Individual 401(k) account. This fee will be waived for all participants in the plan if at least 1 participant qualifies for Flagship Select, Flagship, Voyager Select, and Voyager Services"
-                                                        ],
-                                                        style={"color": "#7a7a7a"},
-                                                    ),
-                                                    html.Br([]),
-                                                ],
-                                                className="nine columns",
-                                            ),
+                                            # html.Table(
+                                            #     make_dash_table(df_avg_returns),
+                                            #     className="tiny-header",
+                                            # )
                                         ],
-                                        className="row",
-                                        style={
-                                            "background-color": "#f9f9f9",
-                                            "padding-bottom": "30px",
-                                        },
+                                        style={"overflow-x": "auto"},
                                     ),
                                 ],
                                 className="twelve columns",
                             )
                         ],
-                        className="row",
+                        className="row ",
+                    ),
+                    # Row 4
+                    html.Div(
+                        [
+                            html.Div(
+                                [
+                                    html.H6(
+                                        [
+                                            "Indicator 5"
+                                        ],
+                                        className="subtitle padded",
+                                    ),
+                                    html.Div(
+                                        [
+                                            # html.Table(
+                                            #     make_dash_table(df_after_tax),
+                                            #     className="tiny-header",
+                                            # )
+                                        ],
+                                        style={"overflow-x": "auto"},
+                                    ),
+                                ],
+                                className=" twelve columns",
+                            )
+                        ],
+                        className="row ",
+                    ),
+                    # Row 5
+                    html.Div(
+                        [
+                            html.Div(
+                                [
+                                    html.H6(
+                                        ["Indicator 6"],
+                                        className="subtitle padded",
+                                    ),
+                                    # html.Table(
+                                    #     make_dash_table(df_recent_returns),
+                                    #     className="tiny-header",
+                                    # ),
+                                ],
+                                className=" twelve columns",
+                            )
+                        ],
+                        className="row ",
                     ),
                 ],
                 className="sub_page",
