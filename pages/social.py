@@ -45,6 +45,8 @@ def create_layout(app):
             # page 2
             html.Div(
                 [
+                    html.H6("Annual Reported Indicators", style={'margin-bottom': '0'}), # Header above Horizontal Line
+                    html.Hr(style={'margin-top': '0', 'margin-bottom': '0'}), # Horizontal line with no top margin
                     # Row 1
                     html.Div(
                         [
@@ -251,6 +253,8 @@ def create_layout(app):
                                 #className="row",
                     ),
                     # Row 2
+                    html.H6("Quarterly Reported Indicators", style={'margin-bottom': '0'}), # Header above Horizontal Line
+                    html.Hr(style={'margin-top': '0', 'margin-bottom': '0'}), # Horizontal line with no top margin
                     html.Div(
                         [
                             html.Div(
@@ -380,6 +384,8 @@ def create_layout(app):
                         ],
                         className="row ",
                     ),
+                    html.H6("Monthly Reported Indicators", style={'margin-bottom': '0'}), # Header above Horizontal Line
+                    html.Hr(style={'margin-top': '0', 'margin-bottom': '0'}), # Horizontal line with no top margin
                     # Row 4
                     html.Div(
                         [
@@ -425,6 +431,7 @@ def create_layout(app):
                         ],
                         className="row ",
                     ),
+                    
                 ],
                 className="sub_page",
             ),

@@ -7,6 +7,7 @@ import plotly.graph_objects as go #Added by @MGB
 
 from utils import Header, make_dash_table
 
+
 #import pathlib
 #import additional libraries by @MGB
 import geopandas as gpd
@@ -19,8 +20,6 @@ from pathlib import Path
 from geopandas import GeoDataFrame # Added by @MGB
 import matplotlib.pyplot as plt # Added by @MGB
 
-from plotly.subplots import make_subplots
-
 # Import libraries to print as PDF
 # #import dash_daq as daq
 # #import weasyprint
@@ -28,14 +27,15 @@ from plotly.subplots import make_subplots
 # from weasyprint import HTML
 
 # get relative data folder
-PATH = pathlib.Path(__file__).parent
-DATA_PATH = PATH.joinpath("../data").resolve()
+#rj PATH = pathlib.Path(__file__).parent
+#rj DATA_PATH = PATH.joinpath("../data").resolve()
 ########################################################################################
 
-df_fund_facts = pd.read_csv(DATA_PATH.joinpath("df_fund_facts.csv"))
-df_price_perf = pd.read_csv(DATA_PATH.joinpath("df_price_perf.csv"))
-df_graph = pd.read_csv(DATA_PATH.joinpath("df_graph.csv")) # Added by @MGB
-gdf2 = pd.read_json(DATA_PATH.joinpath("mozambique_acute_food_insecurity_november_2022.json"))
+#df_fund_facts = pd.read_csv(DATA_PATH.joinpath("df_fund_facts.csv"))
+#rj df_price_perf = pd.read_csv(DATA_PATH.joinpath("df_price_perf.csv"))
+#rj df_graph = pd.read_csv(DATA_PATH.joinpath("df_graph.csv")) # Added by @MGB
+#rj gdf2 = pd.read_json(DATA_PATH.joinpath("mozambique_acute_food_insecurity_november_2022.json"))
+
 
 # 1 ####### Load the GDP (current US$) data  ############################################################
 # Load GDP data from the CSV file
@@ -46,9 +46,56 @@ df_gdp = pd.read_csv(gdp_file_path, skiprows=3)
 # Filter the data to only include "Mozambique" row
 mozambique_data = df_gdp[df_gdp['Country Name'] == 'Mozambique']
 # Extract the years and GDP values from the dataframe
-years_gdp = list(mozambique_data.columns[35:])
-gdp_values = list(mozambique_data.values[0][35:])
+years_gdp = list(mozambique_data.columns[34:])
+gdp_values = list(mozambique_data.values[0][34:])
 # 1 ###### END Load the GDP (current US$) data  ############################################################
+
+# 2 ####### Load the Debt data  ##################################################
+# Load GDP data from the CSV file
+# Get the path to the 'API_NY.GDP.PCAP.CD_DS2_en_csv_v2_5728786' directory relative to the current script's location
+debt_file_path = Path(__file__).parent.parent / 'data' / '1.economic' / 'debt' / 'API_GC.DOD.TOTL.GD.ZS_DS2_en_csv_v2_5872587.csv'
+# Reading csv file
+df_debt = pd.read_csv(debt_file_path, skiprows=3)
+# Filter the data to only include "Mozambique" row
+mozambique_data = df_debt[df_debt['Country Name'] == 'Mozambique']
+# Extract the years and GDP values from the dataframe
+years_debt = list(mozambique_data.columns[59:])
+debt_values = list(mozambique_data.values[0][59:])
+# 2 ###### END Load the debt data  ##################################################
+
+# 2 ####### Load the natural resources data  ##################################################
+# Load nr data from the CSV file
+# Get the path to the directory relative to the current script's location
+rl_file_path = Path(__file__).parent.parent / 'data' / '1.economic' / 'naturalResources' / 'natResourcesRent_pct_GDP.csv'
+# Reading csv file
+df_nrList = pd.read_csv(rl_file_path, skiprows=0)
+#print (df_nrList),
+# Filter the data to only include "Mozambique" row 
+#nr_mozambique_data = df_nrList[df_nrList['Country'] == 'Mozambique']
+#print(mozambique_data),
+# Extract the years and RL values from the dataframe
+#years_rl = rl_mozambique_data['Year'].tolist(),
+#rl_values = rl_mozambique_data['15.5.1 - Red List Index - ER_RSK_LST'].tolist(),
+#print(years_rl),
+#print(rl_values),
+# 2 ###### END Load the natural resources data  ##################################################
+
+# 2 ####### Load the redList data  ##################################################
+# Load rl data from the CSV file
+# Get the path to the directory relative to the current script's location
+rl_file_path = Path(__file__).parent.parent / 'data' / '1.economic' / 'redListIndex' / 'red-list-index.csv'
+# Reading csv file
+df_redList = pd.read_csv(rl_file_path, skiprows=0)
+# print (df_redList),
+# Filter the data to only include "Mozambique" row 
+rl_mozambique_data = df_redList[df_redList['Country'] == 'Mozambique']
+#print(mozambique_data),
+# Extract the years and RL values from the dataframe
+years_rl = rl_mozambique_data['Year'].tolist(),
+rl_values = rl_mozambique_data['15.5.1 - Red List Index - ER_RSK_LST'].tolist(),
+#print(years_rl),
+#print(rl_values),
+# 2 ###### END Load the RedList data  ##################################################
 
 # 2 ####### Load the GDP per capita (current US$) data  ##################################################
 # Load GDP data from the CSV file
@@ -59,8 +106,8 @@ df_gdp2 = pd.read_csv(gdp2_file_path, skiprows=3)
 # Filter the data to only include "Mozambique" row
 mozambique_data = df_gdp2[df_gdp2['Country Name'] == 'Mozambique']
 # Extract the years and GDP values from the dataframe
-years_gdp2 = list(mozambique_data.columns[35:])
-gdp2_values = list(mozambique_data.values[0][35:])
+years_gdp2 = list(mozambique_data.columns[34:])
+gdp2_values = list(mozambique_data.values[0][34:])
 # 2 ###### END Load the GDP per capita (current US$) data  ##################################################
 
 # 3 ###### Load GDP growth (annual %) ####################################################
@@ -72,8 +119,8 @@ df_gdp3 = pd.read_csv(gdp3_file_path, skiprows=3)
 # Filter the data to only include "Mozambique" row
 mozambique_data = df_gdp3[df_gdp3['Country Name'] == 'Mozambique']
 # Extract the years and GDP values from the dataframe
-years_gdp3 = list(mozambique_data.columns[25:])
-gdp3_values = list(mozambique_data.values[0][25:])
+years_gdp3 = list(mozambique_data.columns[24:])
+gdp3_values = list(mozambique_data.values[0][24:])
 # 3 ###### END Load GDP growth (annual %) ####################################################
 
 # 4 ###### Inflation, Consumer Prices ####################################################
@@ -98,60 +145,12 @@ df_yunemployment = pd.read_csv(yunemployment_file_path, skiprows=3)
 # Filter the data to only include "Mozambique" row
 mozambique_data = df_yunemployment[df_yunemployment['Country Name'] == 'Mozambique']
 # Extract the years and youth unemployment values from the dataframe
-years_yunemployment = list(mozambique_data.columns[35:])
-yunemployment_values = list(mozambique_data.values[0][35:])
+years_yunemployment = list(mozambique_data.columns[34:])
+yunemployment_values = list(mozambique_data.values[0][34:])
 # 5 ###### END Load youth unemployment ####################################################
 
-# 6 ####### Load the Debt data  ##################################################
-# Load GDP data from the CSV file
-# Get the path to the 'API_NY.GDP.PCAP.CD_DS2_en_csv_v2_5728786' directory relative to the current script's location
-debt_file_path = Path(__file__).parent.parent / 'data' / '1.economic' / 'debt' / 'API_GC.DOD.TOTL.GD.ZS_DS2_en_csv_v2_5872587.csv'
-# Reading csv file
-df_debt = pd.read_csv(debt_file_path, skiprows=3)
-# Filter the data to only include "Mozambique" row
-mozambique_data = df_debt[df_debt['Country Name'] == 'Mozambique']
-# Extract the years and GDP values from the dataframe
-years_debt = list(mozambique_data.columns[59:])
-debt_values = list(mozambique_data.values[0][59:])
-# 6 ###### END Load the debt data  ##################################################
-
-# 7 ####### Load the redList data  ##################################################
-# Load rl data from the CSV file
-# Get the path to the directory relative to the current script's location
-rl_file_path = Path(__file__).parent.parent / 'data' / '1.economic' / 'redListIndex' / 'red-list-index.csv'
-# Reading csv file
-df_redList = pd.read_csv(rl_file_path, skiprows=0)
-# print (df_redList),
-# Filter the data to only include "Mozambique" row 
-rl_mozambique_data = df_redList[df_redList['Country'] == 'Mozambique']
-#print(mozambique_data),
-# Extract the years and RL values from the dataframe
-years_rl = rl_mozambique_data['Year'].tolist(),
-rl_values = rl_mozambique_data['15.5.1 - Red List Index - ER_RSK_LST'].tolist(),
-#print(years_rl),
-#print(rl_values),
-# 7 ###### END Load the RedList data  ##################################################
-
-# 8 ####### Load the natural resources data  ##################################################
-# Load nr data from the CSV file
-# Get the path to the directory relative to the current script's location
-rl_file_path = Path(__file__).parent.parent / 'data' / '1.economic' / 'naturalResources' / 'natResourcesRent_pct_GDP.csv'
-# Reading csv file
-df_nrList = pd.read_csv(rl_file_path, skiprows=0)
-#print (df_nrList),
-# Filter the data to only include "Mozambique" row 
-#nr_mozambique_data = df_nrList[df_nrList['Country'] == 'Mozambique']
-#print(mozambique_data),
-# Extract the years and RL values from the dataframe
-#years_rl = rl_mozambique_data['Year'].tolist(),
-#rl_values = rl_mozambique_data['15.5.1 - Red List Index - ER_RSK_LST'].tolist(),
-#print(years_rl),
-#print(rl_values),
-# 8 ###### END Load the natural resources data  ##################################################
-
-
-# 9 ###### START Food Insecurity ####################################################
-cpi = pd.read_json(DATA_PATH.joinpath("mozambique_acute_food_insecurity_november_2022.json"))
+# 6 ###### START Consumer Price Index (CPI) #####################################################
+# commented by rj cpi = pd.read_json(DATA_PATH.joinpath("mozambique_acute_food_insecurity_november_2022.json")) #
 # Get the path to the 'data' directory relative to the current script's location
 cpi_file_path = Path(__file__).parent.parent / 'data' / '1.economic' / 'cpi' / 'cpi.json'
 # Open the GeoJSON data
@@ -236,11 +235,7 @@ gdf['color'] = gdf['overall_phase_C'].map(phase_colors)
 gdf['phase_label'] = gdf['overall_phase_C'].map(phase_labels)
 
 
-# 9 ###### END Load the GeoJSON data for FOOD INSECURITY ############################################
-
-# Create a subplot with two y-axes
-fig = make_subplots(specs=[[{"secondary_y": True}]])
-
+######## END Load the GeoJSON data for FOOD INSECURITY ############################################
 
 
 # Create a new instance of the Dash app for the Economic page
@@ -300,7 +295,7 @@ def create_layout(app):
                         [
                             html.Div(
                                 [   # Chart 1 ##################
-                                    html.H6("Food Insecurity: November 2022 - March 2023", className="subtitle padded"),
+                                    html.H6("Food Insecurity: October 2022 - March 2023", className="subtitle padded"),
                                     dcc.Graph(
                                         id="choropleth-map", # Assign a unique id to the graph
                                         figure=update_map(None),  # Call the update_map function to initialize the map
@@ -434,7 +429,7 @@ def create_layout(app):
                                     ),
 
                                     dcc.Graph(
-                                        id="graph-3",
+                                        id="graph-4",
                                         figure={
                                             "data": [
                                                 go.Scatter(
@@ -488,7 +483,7 @@ def create_layout(app):
                                     ),
 
                                     dcc.Graph(
-                                        id="graph-4",
+                                        id="graph-5",
                                         figure={
                                             "data": [
                                                 go.Scatter(
@@ -518,7 +513,7 @@ def create_layout(app):
                                                     "r": 10,
                                                     "t": 20,
                                                     "b": 20,
-                                                    "l": 20,
+                                                    "l": 10,
                                                 },
                                                 #showlegend=True,
                                                 title="",
@@ -542,7 +537,7 @@ def create_layout(app):
 
                     # Row 6 Repeatition
                     html.Div(
-                        [   ###### Chart 4 ###########
+                        [   ###### Youth Unemployment ###########
                             html.Div(
                                 [
                                     html.H6(
@@ -551,7 +546,7 @@ def create_layout(app):
                                     ),
 
                                     dcc.Graph(
-                                        id="graph-3",
+                                        id="graph-6",
                                         figure={
                                             "data": [
                                                 go.Scatter(
@@ -595,170 +590,8 @@ def create_layout(app):
                                 ],
                                 className="six columns",
                             ),
-                           
-                            ###### Chart 5 ########### cpi vs % change (1st change)
-                            html.Div(
-                                [
-                                    html.H6(
-                                        "Central government debt, total (% of GDP) - Mozambique", 
-                                        className="subtitle padded",
-                                    ),
 
-                                    dcc.Graph(
-                                        id="graph-8",
-                                        figure={
-                                            "data": [
-                                                go.Scatter(
-                                                    x=years_debt,
-                                                    y=debt_values,
-                                                    mode='lines',
-                                                    marker=dict(size=8),
-                                                    line={"color": "#97151c"},
-                                        #             mode="lines",
-                                        #             name="Calibre Index Fund Inv",                                                   
-                                                ),
-                                            ],
-                                         "layout": go.Layout(
-                                                autosize=True,
-                                                bargap=0.35,
-                                                font={"family": "Raleway", "size": 10},
-                                                height=200,
-                                                width=340,
-                                                hovermode="closest",
-                                                # legend={
-                                                #     "x": -0.0228945952895,
-                                                #     "y": -0.189563896463,
-                                                #     "orientation": "h",
-                                                #     "yanchor": "top",
-                                                # },
-                                                margin={
-                                                    "r": 20,
-                                                    "t": 20,
-                                                    "b": 20,
-                                                    "l": 20,
-                                                },
-                                                #showlegend=True,
-                                                title="",
-                                             
-                                            ),
-                                        },
-                                        config={"displayModeBar": True, "displaylogo": False},  # Enable the display mode bar and hide the logo
-
-                                    ),
-                                    html.P(html.A("Source: International Monetary Fund (IMF). Last Updated Date: August, 31st 2023.", href='https://www.economy.com/mozambique/consumer-price-index-cpi', target="_blank", style={"font-size": "10px", "color": "#888"})),
-        
-                                ],
-
-                                className="six columns",
-                            ),
-                            
-                            ###### Chart 5 ###########
-                            
-
-                        ],
-                        className="row ",
-                        #style={"margin-bottom": "20px"},
-
-                    ), ######### Closing DIV ######### 
-
-                    # Row 6 Repeatition
-                    html.Div(
-                        [   
-                             ###### Chart 5 ###########
-                            html.Div(
-                                [
-                                    html.H6(
-                                        "Red List Index",
-                                        className="subtitle padded",
-                                    ),
-                                    dcc.Graph(
-                                        id="graph-CPI",
-                                        figure={
-                                            "data": [
-                                                # go.Bar(
-                                                #     x=xAxisLabels,
-                                                #     y=secondYAxis,
-                                                #     marker={
-                                                #         "color": "#97151c",
-                                                #         # "line": {
-                                                #         #     "color": "rgb(255, 255, 255)",
-                                                #         #     "width": 2,
-                                                #         # },
-                                                #     },
-                                                #     name="Consumer Price Index",
-                                                # ),
-                                                go.Scatter(
-                                                    x=rl_mozambique_data['Year'],
-                                                    y=rl_mozambique_data['15.5.1 - Red List Index - ER_RSK_LST'],
-                                                    mode='lines+markers',
-                                                    marker={
-                                                        "color": "#97151c",
-                                                        "line": {
-                                                            "color": "rgb(255, 255, 255)",
-                                                            "width": 2,
-                                                        },
-                                                    },
-                                                    name="% Change",
-                                                ),
-                                            ],
-                                            "layout": go.Layout(
-                                                autosize=False,
-                                                #bargap=0.35,
-                                                font={"family": "Raleway", "size": 10},
-                                                height=200,
-                                                width=340,
-                                                hovermode="closest",
-                                                # legend={
-                                                #     "x": -0.0428945952895,
-                                                #     "y": -0.5,
-                                                #     "orientation": "h",
-                                                #     "yanchor": "top",
-                                                # },
-                                                
-                                                margin={
-                                                    "r": 20,
-                                                    "t": 20,
-                                                    "b": 20,
-                                                    "l": 20,
-                                                },
-                                                showlegend=False,
-                                                title="",
-                                                #width=330,
-                                                # xaxis_title='Date',
-                                                # yaxis_title='Value',
-                                                
-                                                xaxis={
-                                                    "autorange": True,
-                                                    "range": [-0.5, 4.5], 
-                                                    "showline": False,
-                                                    "title": "",
-                                                    "type": "category",
-                                                    "tickangle": 45, # Display xAxisLabels (months) in a diagonal direction
-                                                },
-                                                yaxis={
-                                                    "autorange": True,
-                                                    "range": [0, 22.9789473684],
-                                                    "showgrid": True,
-                                                    "showline": False,
-                                                    "title": "",
-                                                    "type": "linear",
-                                                    "zeroline": False,
-                                                },
-                                            ),
-                                        },
-                                        config={"displayModeBar": True, "displaylogo": False},  # Enable the display mode bar and hide the logo
-                                    ),
-                                    html.P(html.A("Source: Red List Index, 1993 to 2022 (ourworldindata.org)", href='https://ourworldindata.org/grapher/red-list-index?tab=chart&country=~MOZ', target="_blank", style={"font-size": "10px", "color": "#888"})),
-        
-                                ],
-
-                                className="six columns",
-                            ),
-                           
-                            ###### Chart 5 ########### cpi vs % change (1st change)
-                    # html.Div(
-                    #     [   
-                            ###### Chart 4 ###########
+                            ###### Total Natural Resources Rents: % of GDP ###########
                             html.Div(
                                 [
                                     html.H6(
@@ -811,97 +644,441 @@ def create_layout(app):
                                 ],
                                 className="six columns",
                             ),
-                                                                            
+                            
+                            ###### Chart 5 ###########
+                            
+
                         ],
                         className="row ",
                         style={"margin-bottom": "20px"},
                     ), ######### Closing DIV ######### 
 
+                    # Row 7 Repetition
 
-                    # Row 7 Repeatition
-
-                    html.H6("Quarterly Reported Indicators", style={'margin-top': '0', 'margin-bottom': '0'}), # Header above Horizontal Line
-                    html.Hr(style={'margin-top': '0', 'margin-bottom': '0'}), # Horizontal line with no top margin
+                    # html.H6("Quarterly Reported Indicators", style={'margin-top': '0', 'margin-bottom': '0'}), # Header above Horizontal Line
+                    # html.Hr(style={'margin-top': '0', 'margin-bottom': '0'}), # Horizontal line with no top margin
 
 
                     html.Div(
-                        [   ###### Chart 4 ###########
+                        [   ###### Central Govenment debt, total (% of GDP) ###########
                             html.Div(
                                 [
                                     html.H6(
-                                        "Consumer Price Index (CPI)",
+                                        "Central government debt, total (% of GDP) - Mozambique", 
                                         className="subtitle padded",
                                     ),
 
-                                     dcc.Graph(
-                                        id="bar_line_chart",
-                                        
+                                    dcc.Graph(
+                                        id="graph-8",
                                         figure={
                                             "data": [
-                                                go.Bar(
-                                                    x=xAxisLabels, # x=xAxisLabels,
-                                                    y=secondYAxis,  # y=firstYAxis,
-                                                    marker={
-                                                        "color": "#97151c",
-                                                        # "line": {
-                                                        #     "color": "rgb(255, 255, 255)",
-                                                        #     "width": 2,
-                                                        # },
-                                                    },
-                                                    name="% Change",
-                                                    yaxis='y2',  # Use the secondary y-axis
-                                                ),
                                                 go.Scatter(
-                                                    x=xAxisLabels, # x=xAxisLabels,
-                                                    y=firstYAxis, # y=secondYAxis,
-                                                    mode='lines+markers',
-                                                    marker={
-                                                        "color": "#dddddd",
-                                                        "line": {
-                                                            "color": "rgb(255, 255, 255)",
-                                                            "width": 2,
-                                                        },
-                                                    },
-                                                    name="Consumer Price Index",
-                                                    #yaxis='y2',  # Use the secondary y-axis
+                                                    x=years_debt,
+                                                    y=debt_values,
+                                                    mode='lines',
+                                                    marker=dict(size=8),
+                                                    line={"color": "#97151c"},
+                                        #             mode="lines",
+                                        #             name="Calibre Index Fund Inv",                                                   
                                                 ),
                                             ],
-                                            "layout": go.Layout(
-                                                autosize=False,
-                                                #bargap=0.35,
+                                         "layout": go.Layout(
+                                                autosize=True,
+                                                bargap=0.35,
                                                 font={"family": "Raleway", "size": 10},
                                                 height=200,
                                                 width=340,
                                                 hovermode="closest",
-                                                legend={
-                                                    "x": -0.0428945952895,
-                                                    "y": -0.5,
-                                                    "orientation": "h",
-                                                    "yanchor": "top",
-                                                },
+                                                # legend={
+                                                #     "x": -0.0228945952895,
+                                                #     "y": -0.189563896463,
+                                                #     "orientation": "h",
+                                                #     "yanchor": "top",
+                                                # },
                                                 margin={
                                                     "r": 20,
                                                     "t": 20,
                                                     "b": 20,
                                                     "l": 20,
                                                 },
-                                                showlegend=True,
+                                                #showlegend=True,
                                                 title="",
-                                                #width=330,
+                                             
+                                            ),
+                                        },
+                                        config={"displayModeBar": True, "displaylogo": False},  # Enable the display mode bar and hide the logo
+
+                                    ),
+                                    html.P(html.A("Source: The World Bank. Last Updated Date: 2021.", href='https://data.worldbank.org/indicator/GC.DOD.TOTL.GD.ZS?end=2021&locations=MZ&start=2016&view=chart', target="_blank", style={"font-size": "10px", "color": "#888"})),
+                                ],
+                                className="six columns",
+                            ),
+                           
+                            ###### Red List Index ###########
+                            html.Div(
+                                [
+                                    html.H6(
+                                        "Red List Index",
+                                        className="subtitle padded",
+                                    ),
+                                    dcc.Graph(
+                                        id="graph-CPI",
+                                        figure={
+                                            "data": [
+                                                # go.Bar(
+                                                #     x=xAxisLabels,
+                                                #     y=secondYAxis,
+                                                #     marker={
+                                                #         "color": "#97151c",
+                                                #         # "line": {
+                                                #         #     "color": "rgb(255, 255, 255)",
+                                                #         #     "width": 2,
+                                                #         # },
+                                                #     },
+                                                #     name="Consumer Price Index",
+                                                # ),
+                                                go.Scatter(
+                                                    x=rl_mozambique_data['Year'],
+                                                    y=rl_mozambique_data['15.5.1 - Red List Index - ER_RSK_LST'],
+                                                    mode='lines+markers',
+                                                    marker={
+                                                        "color": "#97151c",
+                                                        "line": {
+                                                            "color": "rgb(255, 255, 255)",
+                                                            "width": 2,
+                                                        },
+                                                    },
+                                                    name="% Change",
+                                                ),
+                                            ],
+                                            "layout": go.Layout(
+                                                autosize=False,
+                                                #bargap=0.35,
+                                                font={"family": "Raleway", "size": 10},
+                                                height=225,
+                                                hovermode="closest",
+                                                # legend={
+                                                #     "x": -0.0228945952895,
+                                                #     "y": -0.189563896463,
+                                                #     "orientation": "h",
+                                                #     "yanchor": "top",
+                                                # },
+                                                margin={
+                                                    "r": 10,
+                                                    "t": 20,
+                                                    "b": 30,
+                                                    "l": 20,
+                                                },
+                                                showlegend=False,
+                                                title="",
+                                                width=330,
                                                 # xaxis_title='Date',
                                                 # yaxis_title='Value',
                                                 
                                                 xaxis={
                                                     "autorange": True,
-                                                    "range": [-0.5, 4.5], # "range": [-0.5, 4.5],
+                                                    "range": [-0.5, 4.5],
                                                     "showline": False,
                                                     "title": "",
                                                     "type": "category",
-                                                    "tickangle": 45, # Display xAxisLabels (months) in a diagonal direction
+                                                    "tickangle": 45
+                                                },
+                                                yaxis={
+                                                    "autorange": True,
+                                                    "range": [0, 22.9789473684],
+                                                    "showgrid": True,
+                                                    "showline": False,
+                                                    "title": "",
+                                                    "type": "linear",
+                                                    "zeroline": False,
+                                                },
+                                            ),
+                                        },
+                                        config={"displayModeBar": True, "displaylogo": False},  # Enable the display mode bar and hide the logo
+                                    ),
+                                    html.P(html.A("Source: Red List Index, 1993 to 2022 (ourworldindata.org)", href='https://ourworldindata.org/grapher/red-list-index?tab=chart&country=~MOZ', target="_blank", style={"font-size": "10px", "color": "#888"})),
+        
+                                ],
+
+                                className="six columns",
+                            ),
+                            
+                            ###### Chart 5 ###########
+                            
+
+                        ],
+                        className="row ",
+                    ), ######### Closing DIV ######### 
+
+                    #####
+                    #####
+                    #####
+                    html.H6("Quarterly Reported Indicators", style={'margin-bottom': '0'}), # Header above Horizontal Line
+                    html.Hr(style={'margin-top': '0', 'margin-bottom': '0'}), # Horizontal line with no top margin
+
+                    #####
+                    html.Div(
+                        [
+                            html.Div(
+                                [
+                                    html.H6("Indicator 10", className="subtitle padded"),
+                                    dcc.Graph(
+                                        id="graph-4",
+                                        figure={
+                                            "data": [
+                                                go.Scatter(
+                                                    #x=df_graph["Date"],
+                                                    #y=df_graph["Calibre Index Fund"],
+                                                    line={"color": "#97151c"},
+                                                    mode="lines",
+                                                    name="Calibre Index Fund",
+                                                ),
+                                                go.Scatter(
+                                                    #x=df_graph["Date"],
+                                                    # y=df_graph[
+                                                    #     "MSCI EAFE Index Fund (ETF)"
+                                                    # ],
+                                                    line={"color": "#b5b5b5"},
+                                                    mode="lines",
+                                                    name="MSCI EAFE Index Fund (ETF)",
+                                                ),
+                                            ],
+                                            "layout": go.Layout(
+                                                autosize=True,
+                                                width=340,
+                                                height=200,
+                                                font={"family": "Raleway", "size": 10},
+                                                margin={
+                                                    "r": 30,
+                                                    "t": 30,
+                                                    "b": 30,
+                                                    "l": 30,
+                                                },
+                                                showlegend=True,
+                                                titlefont={
+                                                    "family": "Raleway",
+                                                    "size": 10,
+                                                },
+                                                xaxis={
+                                                    "autorange": True,
+                                                    "range": [
+                                                        "2007-12-31",
+                                                        "2018-03-06",
+                                                    ],
+                                                    "rangeselector": {
+                                                        "buttons": [
+                                                            {
+                                                                "count": 1,
+                                                                "label": "1Y",
+                                                                "step": "year",
+                                                                "stepmode": "backward",
+                                                            },
+                                                            {
+                                                                "count": 3,
+                                                                "label": "3Y",
+                                                                "step": "year",
+                                                                "stepmode": "backward",
+                                                            },
+                                                            {
+                                                                "count": 5,
+                                                                "label": "5Y",
+                                                                "step": "year",
+                                                            },
+                                                            {
+                                                                "count": 10,
+                                                                "label": "10Y",
+                                                                "step": "year",
+                                                                "stepmode": "backward",
+                                                            },
+                                                            {
+                                                                "label": "All",
+                                                                "step": "all",
+                                                            },
+                                                        ]
+                                                    },
+                                                    "showline": True,
+                                                    "type": "date",
+                                                    "zeroline": False,
+                                                },
+                                                yaxis={
+                                                    "autorange": True,
+                                                    "range": [
+                                                        18.6880162434,
+                                                        278.431996757,
+                                                    ],
+                                                    "showline": True,
+                                                    "type": "linear",
+                                                    "zeroline": False,
+                                                },
+                                            ),
+                                        },
+                                        config={"displayModeBar": False},
+                                    ),
+                                ],
+                                className="twelve columns",
+                            )
+                        ],
+                        className="row ",
+                    ),
+                    # Row 3
+                    html.Div(
+                        [
+                            html.Div(
+                                [
+                                    html.H6(
+                                        [
+                                            "Indicator 11"
+                                        ],
+                                        className="subtitle padded",
+                                    ),
+                                    html.Div(
+                                        [
+                                            # html.Table(
+                                            #     make_dash_table(df_avg_returns),
+                                            #     className="tiny-header",
+                                            # )
+                                        ],
+                                        style={"overflow-x": "auto"},
+                                    ),
+                                ],
+                                className="twelve columns",
+                            )
+                        ],
+                        className="row ",
+                    ),
+                    # Row 4
+                    html.Div(
+                        [
+                            html.Div(
+                                [
+                                    html.H6(
+                                        [
+                                            "Indicator 12"
+                                        ],
+                                        className="subtitle padded",
+                                    ),
+                                    html.Div(
+                                        [
+                                            # html.Table(
+                                            #     make_dash_table(df_after_tax),
+                                            #     className="tiny-header",
+                                            # )
+                                        ],
+                                        style={"overflow-x": "auto"},
+                                    ),
+                                ],
+                                className=" twelve columns",
+                            )
+                        ],
+                        className="row ",
+                    ),
+                    # Row 5
+                    html.Div(
+                        [
+                            html.Div(
+                                [
+                                    html.H6(
+                                        ["Indicator 13"],
+                                        className="subtitle padded",
+                                    ),
+                                    # html.Table(
+                                    #     make_dash_table(df_recent_returns),
+                                    #     className="tiny-header",
+                                    # ),
+                                ],
+                                className=" twelve columns",
+                            )
+                        ],
+                        className="row ",
+                    ),
+
+
+
+                    html.H6("Monthly Reported Indicators", style={'margin-bottom': '0'}), # Header above Horizontal Line
+                    html.Hr(style={'margin-top': '0', 'margin-bottom': '0'}), # Horizontal line with no top margin
+
+                    #####
+
+
+                    #####
+
+
+                    html.Div(
+                        [   
+                             ###### Chart Consumer Price Index ###########
+                            html.Div(
+                                [
+                                    html.H6(
+                                        "Consumer Price Index (CPI)                           ",
+                                        className="subtitle padded",
+                                    ),
+                                    dcc.Graph(
+                                        id="graph-CPI",
+                                        figure={
+                                            "data": [
+                                                go.Bar(
+                                                    x=xAxisLabels,
+                                                    y=secondYAxis,
+                                                    marker={
+                                                        "color": "#bbbbbb",
+                                                        
+                                                        # "line": {
+                                                        #     "color": "rgb(255, 255, 255)",
+                                                        #     "width": 2,
+                                                        # },
+                                                    },
+                                                    name="% Change",
+                                                    yaxis="y2",
+                                                ),
+                                                go.Scatter(
+                                                    x=xAxisLabels,
+                                                    y=firstYAxis,
+                                                    mode='lines+markers',
+                                                    marker={
+                                                        "color": "#97151c",
+                                                        "line": {
+                                                            "color": "rgb(255, 255, 255)",
+                                                            "width": 2,
+                                                        },
+                                                    },
+                                                    name="CPI",
+                                                ),
+                                            ],
+                                            "layout": go.Layout(
+                                                autosize=False,
+                                                #bargap=0.35,
+                                                font={"family": "Raleway", "size": 10},
+                                                height=250,
+                                                width=340,
+                                                hovermode="closest",
+                                                legend={
+                                                    "x": -0.0428945952895,
+                                                    "y": -0.309563896463,
+                                                    "orientation": "h",
+                                                    "yanchor": "top",
+                                                },
+                                                margin={
+                                                    "r": 20,
+                                                    "t": 15,
+                                                    "b": 20,
+                                                    "l": 20,
+                                                },
+                                                showlegend=True,
+                                                title="",
+                                                # xaxis_title='Date',
+                                                # yaxis_title='Value',
+                                                
+                                                xaxis={
+                                                    "autorange": True,
+                                                    "range": [-0.5, 4.5],
+                                                    "showline": False,
+                                                    "title": "",
+                                                    "type": "category",
+                                                    "tickangle": 45
                                                 },
                                                 yaxis={
                                                     "autorange": False,
-                                                    "range": [220, 245], # "range": [-100, 240],
+                                                    "range": [220, 245],
                                                     "showgrid": True,
                                                     "showline": False,
                                                     "title": "",
@@ -911,325 +1088,121 @@ def create_layout(app):
                                                 },
                                                 yaxis2={
                                                     "autorange": False,
-                                                    "range": [-2, 3], # "range": [0, 100],
+                                                    "range": [-2, 3],
                                                     "showgrid": False,
                                                     "showline": False,
                                                     "title": "",
+                                                    "side": "right",
                                                     "type": "linear",
                                                     "zeroline": False,
-                                                    #"overlaying": "y",
-                                                    "side": "right",
                                                 },
                                             ),
+                                            
                                         },
+                                        
                                         config={"displayModeBar": True, "displaylogo": False},  # Enable the display mode bar and hide the logo
                                     ),
-                                    html.P(html.A("Source: The World Bank. Last Updated Date: September, 5th 2023.", href='https://data.worldbank.org/indicator/SL.UEM.1524.ZS?locations=MZ&most_recent_value_desc=false', target="_blank", style={"font-size": "10px", "color": "#888"})),
-                                ],
-                                className="six columns",
-                            ),
-                           
-                            ###### Chart 5 ###########
-                            html.Div(
-                                [
-                                    # html.H6(
-                                    #     "Consumer Price Index (CPI)",
-                                    #     className="subtitle padded",
-                                    # ),
-                                    # dcc.Graph(
-                                    #     id="graph-1",
-                                    #     figure={
-                                    #         "data": [
-                                    #             go.Bar(
-                                    #                 x=xAxisLabels,
-                                    #                 y=firstYAxis,
-                                    #                 marker={
-                                    #                     "color": "#97151c",
-                                    #                     # "line": {
-                                    #                     #     "color": "rgb(255, 255, 255)",
-                                    #                     #     "width": 2,
-                                    #                     # },
-                                    #                 },
-                                    #                 name="Consumer Price Index",
-                                    #             ),
-                                    #             # go.Scatter(
-                                    #             #     x=xAxisLabels,
-                                    #             #     y=secondYAxis,
-                                    #             #     mode='lines',
-                                    #             #     marker={
-                                    #             #         "color": "#dddddd",
-                                    #             #         "line": {
-                                    #             #             "color": "rgb(255, 255, 255)",
-                                    #             #             "width": 2,
-                                    #             #         },
-                                    #             #     },
-                                    #             #     name="S&P 500 Index",
-                                    #             # ),
-                                    #         ],
-                                    #         "layout": go.Layout(
-                                    #             autosize=False,
-                                    #             #bargap=0.35,
-                                    #             font={"family": "Raleway", "size": 10},
-                                    #             height=200,
-                                    #             hovermode="closest",
-                                    #             legend={
-                                    #                 "x": -0.0228945952895,
-                                    #                 "y": -0.189563896463,
-                                    #                 "orientation": "h",
-                                    #                 "yanchor": "top",
-                                    #             },
-                                    #             margin={
-                                    #                 "r": 10,
-                                    #                 "t": 20,
-                                    #                 "b": 20,
-                                    #                 "l": 20,
-                                    #             },
-                                    #             showlegend=True,
-                                    #             title="",
-                                    #             width=330,
-                                    #             # xaxis_title='Date',
-                                    #             # yaxis_title='Value',
-                                                
-                                    #             xaxis={
-                                    #                 "autorange": True,
-                                    #                 "range": [-0.5, 4.5],
-                                    #                 "showline": True,
-                                    #                 "title": "",
-                                    #                 "type": "category",
-                                    #             },
-                                    #             yaxis={
-                                    #                 "autorange": True,
-                                    #                 "range": [0, 22.9789473684],
-                                    #                 "showgrid": True,
-                                    #                 "showline": True,
-                                    #                 "title": "",
-                                    #                 "type": "linear",
-                                    #                 "zeroline": False,
-                                    #             },
-                                    #         ),
-                                    #     },
-                                    #     config={"displayModeBar": True, "displaylogo": False},  # Enable the display mode bar and hide the logo
-                                    # ),
-                                    # html.P(html.A("Source: International Monetary Fund (IMF). Last Updated Date: August, 31st 2023.", href='https://www.economy.com/mozambique/consumer-price-index-cpi', target="_blank", style={"font-size": "10px", "color": "#888"})),
+                                    html.P(html.A("Source: International Monetary Fund (IMF). Last Updated Date: August, 31st 2023.", href='https://www.economy.com/mozambique/consumer-price-index-cpi', target="_blank", style={"font-size": "10px", "color": "#888"})),
         
                                 ],
 
                                 className="six columns",
                             ),
+                          
+                            ###### Chart 5 ###########
+                            # html.Div(
+                            #     [
+                            #         # html.H6(
+                            #         #     "Red List Index",
+                            #         #     className="subtitle padded",
+                            #         # ),
+                            #         # dcc.Graph(
+                            #         #     id="graph-CPI",
+                            #         #     figure={
+                            #         #         "data": [
+                            #         #             # go.Bar(
+                            #         #             #     x=xAxisLabels,
+                            #         #             #     y=secondYAxis,
+                            #         #             #     marker={
+                            #         #             #         "color": "#97151c",
+                            #         #             #         # "line": {
+                            #         #             #         #     "color": "rgb(255, 255, 255)",
+                            #         #             #         #     "width": 2,
+                            #         #             #         # },
+                            #         #             #     },
+                            #         #             #     name="Consumer Price Index",
+                            #         #             # ),
+                            #         #             go.Scatter(
+                            #         #                 x=rl_mozambique_data['Year'],
+                            #         #                 y=rl_mozambique_data['15.5.1 - Red List Index - ER_RSK_LST'],
+                            #         #                 mode='lines+markers',
+                            #         #                 marker={
+                            #         #                     "color": "#97151c",
+                            #         #                     "line": {
+                            #         #                         "color": "rgb(255, 255, 255)",
+                            #         #                         "width": 2,
+                            #         #                     },
+                            #         #                 },
+                            #         #                 name="% Change",
+                            #         #             ),
+                            #         #         ],
+                            #         #         "layout": go.Layout(
+                            #         #             autosize=False,
+                            #         #             #bargap=0.35,
+                            #         #             font={"family": "Raleway", "size": 10},
+                            #         #             height=250,
+                            #         #             hovermode="closest",
+                            #         #             # legend={
+                            #         #             #     "x": -0.0228945952895,
+                            #         #             #     "y": -0.189563896463,
+                            #         #             #     "orientation": "h",
+                            #         #             #     "yanchor": "top",
+                            #         #             # },
+                            #         #             margin={
+                            #         #                 "r": 10,
+                            #         #                 "t": 20,
+                            #         #                 "b": 30,
+                            #         #                 "l": 20,
+                            #         #             },
+                            #         #             showlegend=False,
+                            #         #             title="",
+                            #         #             width=330,
+                            #         #             # xaxis_title='Date',
+                            #         #             # yaxis_title='Value',
+                                                
+                            #         #             xaxis={
+                            #         #                 "autorange": True,
+                            #         #                 "range": [-0.5, 4.5],
+                            #         #                 "showline": False,
+                            #         #                 "title": "",
+                            #         #                 "type": "category",
+                            #         #             },
+                            #         #             yaxis={
+                            #         #                 "autorange": True,
+                            #         #                 "range": [0, 22.9789473684],
+                            #         #                 "showgrid": True,
+                            #         #                 "showline": False,
+                            #         #                 "title": "",
+                            #         #                 "type": "linear",
+                            #         #                 "zeroline": False,
+                            #         #             },
+                            #         #         ),
+                            #         #     },
+                            #         #     config={"displayModeBar": True, "displaylogo": False},  # Enable the display mode bar and hide the logo
+                            #         # ),
+                            #         # html.P(html.A("Source: Red List Index, 1993 to 2022 (ourworldindata.org)", href='https://ourworldindata.org/grapher/red-list-index?tab=chart&country=~MOZ', target="_blank", style={"font-size": "10px", "color": "#888"})),
+        
+                            #     ],
+
+                            #     className="six columns",
+                            # ),
                             
                             ###### Chart 5 ###########
                             
 
                         ],
                         className="row ",
-                        style={"margin-bottom": "20px"},
-                    ), ######### Closing DIV ######### 
-
-
-                    html.H6("Monthly Reported Indicators", style={'margin-top': '20', 'margin-bottom': '0'}), # Header above Horizontal Line
-                    html.Hr(style={'margin-top': '0', 'margin-bottom': '0'}), # Horizontal line with no top margin
-
-
-                    html.Div(
-                        [   ###### Chart 4 ###########
-                            html.Div(
-                                [
-                                    # html.H6(
-                                    #     "Consumer Price Index (CPI)",
-                                    #     className="subtitle padded",
-                                    # ),
-
-                                    #  dcc.Graph(
-                                    #     id="bar_line_chart",
-                                        
-                                    #     figure={
-                                    #         "data": [
-                                    #             go.Bar(
-                                    #                 x=xAxisLabels, # x=xAxisLabels,
-                                    #                 y=secondYAxis,  # y=firstYAxis,
-                                    #                 marker={
-                                    #                     "color": "#97151c",
-                                    #                     # "line": {
-                                    #                     #     "color": "rgb(255, 255, 255)",
-                                    #                     #     "width": 2,
-                                    #                     # },
-                                    #                 },
-                                    #                 name="% Change",
-                                    #                 yaxis='y2',  # Use the secondary y-axis
-                                    #             ),
-                                    #             go.Scatter(
-                                    #                 x=xAxisLabels, # x=xAxisLabels,
-                                    #                 y=firstYAxis, # y=secondYAxis,
-                                    #                 mode='lines+markers',
-                                    #                 marker={
-                                    #                     "color": "#dddddd",
-                                    #                     "line": {
-                                    #                         "color": "rgb(255, 255, 255)",
-                                    #                         "width": 2,
-                                    #                     },
-                                    #                 },
-                                    #                 name="Consumer Price Index",
-                                    #                 #yaxis='y2',  # Use the secondary y-axis
-                                    #             ),
-                                    #         ],
-                                    #         "layout": go.Layout(
-                                    #             autosize=False,
-                                    #             #bargap=0.35,
-                                    #             font={"family": "Raleway", "size": 10},
-                                    #             height=200,
-                                    #             width=340,
-                                    #             hovermode="closest",
-                                    #             legend={
-                                    #                 "x": -0.0428945952895,
-                                    #                 "y": -0.5,
-                                    #                 "orientation": "h",
-                                    #                 "yanchor": "top",
-                                    #             },
-                                    #             margin={
-                                    #                 "r": 20,
-                                    #                 "t": 20,
-                                    #                 "b": 20,
-                                    #                 "l": 20,
-                                    #             },
-                                    #             showlegend=True,
-                                    #             title="",
-                                    #             #width=330,
-                                    #             # xaxis_title='Date',
-                                    #             # yaxis_title='Value',
-                                                
-                                    #             xaxis={
-                                    #                 "autorange": True,
-                                    #                 "range": [-0.5, 4.5], # "range": [-0.5, 4.5],
-                                    #                 "showline": False,
-                                    #                 "title": "",
-                                    #                 "type": "category",
-                                    #                 "tickangle": 45, # Display xAxisLabels (months) in a diagonal direction
-                                    #             },
-                                    #             yaxis={
-                                    #                 "autorange": False,
-                                    #                 "range": [220, 245], # "range": [-100, 240],
-                                    #                 "showgrid": True,
-                                    #                 "showline": False,
-                                    #                 "title": "",
-                                    #                 "type": "linear",
-                                    #                 "zeroline": False,
-                                    #                 "overlaying": "y2",
-                                    #             },
-                                    #             yaxis2={
-                                    #                 "autorange": False,
-                                    #                 "range": [-2, 3], # "range": [0, 100],
-                                    #                 "showgrid": False,
-                                    #                 "showline": False,
-                                    #                 "title": "",
-                                    #                 "type": "linear",
-                                    #                 "zeroline": False,
-                                    #                 #"overlaying": "y",
-                                    #                 "side": "right",
-                                    #             },
-                                    #         ),
-                                    #     },
-                                    #     config={"displayModeBar": True, "displaylogo": False},  # Enable the display mode bar and hide the logo
-                                    # ),
-                                    # html.P(html.A("Source: The World Bank. Last Updated Date: September, 5th 2023.", href='https://data.worldbank.org/indicator/SL.UEM.1524.ZS?locations=MZ&most_recent_value_desc=false', target="_blank", style={"font-size": "10px", "color": "#888"})),
-                                ],
-                                className="six columns",
-                            ),
-                           
-                            ###### Chart 5 ###########
-                            html.Div(
-                                [
-                                    # html.H6(
-                                    #     "Consumer Price Index (CPI)",
-                                    #     className="subtitle padded",
-                                    # ),
-                                    # dcc.Graph(
-                                    #     id="graph-1",
-                                    #     figure={
-                                    #         "data": [
-                                    #             go.Bar(
-                                    #                 x=xAxisLabels,
-                                    #                 y=firstYAxis,
-                                    #                 marker={
-                                    #                     "color": "#97151c",
-                                    #                     # "line": {
-                                    #                     #     "color": "rgb(255, 255, 255)",
-                                    #                     #     "width": 2,
-                                    #                     # },
-                                    #                 },
-                                    #                 name="Consumer Price Index",
-                                    #             ),
-                                    #             # go.Scatter(
-                                    #             #     x=xAxisLabels,
-                                    #             #     y=secondYAxis,
-                                    #             #     mode='lines',
-                                    #             #     marker={
-                                    #             #         "color": "#dddddd",
-                                    #             #         "line": {
-                                    #             #             "color": "rgb(255, 255, 255)",
-                                    #             #             "width": 2,
-                                    #             #         },
-                                    #             #     },
-                                    #             #     name="S&P 500 Index",
-                                    #             # ),
-                                    #         ],
-                                    #         "layout": go.Layout(
-                                    #             autosize=False,
-                                    #             #bargap=0.35,
-                                    #             font={"family": "Raleway", "size": 10},
-                                    #             height=200,
-                                    #             hovermode="closest",
-                                    #             legend={
-                                    #                 "x": -0.0228945952895,
-                                    #                 "y": -0.189563896463,
-                                    #                 "orientation": "h",
-                                    #                 "yanchor": "top",
-                                    #             },
-                                    #             margin={
-                                    #                 "r": 10,
-                                    #                 "t": 20,
-                                    #                 "b": 20,
-                                    #                 "l": 20,
-                                    #             },
-                                    #             showlegend=True,
-                                    #             title="",
-                                    #             width=330,
-                                    #             # xaxis_title='Date',
-                                    #             # yaxis_title='Value',
-                                                
-                                    #             xaxis={
-                                    #                 "autorange": True,
-                                    #                 "range": [-0.5, 4.5],
-                                    #                 "showline": True,
-                                    #                 "title": "",
-                                    #                 "type": "category",
-                                    #             },
-                                    #             yaxis={
-                                    #                 "autorange": True,
-                                    #                 "range": [0, 22.9789473684],
-                                    #                 "showgrid": True,
-                                    #                 "showline": True,
-                                    #                 "title": "",
-                                    #                 "type": "linear",
-                                    #                 "zeroline": False,
-                                    #             },
-                                    #         ),
-                                    #     },
-                                    #     config={"displayModeBar": True, "displaylogo": False},  # Enable the display mode bar and hide the logo
-                                    # ),
-                                    # html.P(html.A("Source: International Monetary Fund (IMF). Last Updated Date: August, 31st 2023.", href='https://www.economy.com/mozambique/consumer-price-index-cpi', target="_blank", style={"font-size": "10px", "color": "#888"})),
-        
-                                ],
-
-                                className="six columns",
-                            ),
-                            
-                            ###### Chart 5 ###########
-                            
-
-                        ],
-                        className="row ",
-                    ), ######### Closing DIV ######### 
-
+                    ),
 
                 ],
              #],         
@@ -1310,20 +1283,13 @@ def update_map(clickData):
     fig.update_layout(margin=dict(l=0, r=120, t=20, b=0))  # Adjust the right margin to accommodate the legend
     return fig
 
-    # Customize the layout of the combined chart Bar Chart & Line Chart
-    fig.update_layout(
-        title='Combined Bar and Line Chart',
-        xaxis_title='Date',
-        yaxis_title='Value (Left Axis)',
-        yaxis2=dict(
-            title='Value (Right Axis)',
-            overlaying='y',
-            side='right',
-            range= [-2, 2],
-        ),
-        showlegend=True
-    )
+# Customize the layout of the bar 
+#graph_CPI.update_layout(     title='Bar Chart',     xaxis_title='Date',     yaxis_title='Value',     showlegend=True) 
 
+ 
+
+# Customize the layout of the line 
+#chartline_chart.update_layout(     title='Line Chart',     xaxis_title='Date',     yaxis_title='Value',     showlegend=True)
 
 
     # START Putting Printing button as PDF

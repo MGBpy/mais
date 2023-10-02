@@ -50,6 +50,9 @@ def create_layout(app):
             # page 2
             html.Div(
                 [
+                    html.H6("Annual Reported Indicators", style={'margin-bottom': '0'}), # Header above Horizontal Line
+                    html.Hr(style={'margin-top': '0', 'margin-bottom': '0'}), # Horizontal line with no top margin
+                    # Row 4
                     # Row 1
                     html.Div(
                         [
@@ -153,100 +156,100 @@ def create_layout(app):
                                         className = "six columns",
                             ),
                             html.Div([  
-                                        html.H6("Literacy rate, adult total (% of people ages 15 and above)", className="subtitle padded"),
-                                        dcc.Graph(
-                                            id="graph-2",
-                                            figure={
-                                                "data": [
-                                                    go.Scatter(
-                                                        x=years_litr,
-                                                        y=litr_values,
-                                                        line={"color": "#97151c"},
-                                                        mode="lines+markers",
-                                                        name="",
-                                                    ),
-                                                    # go.Scatter(
-                                                    #     x=df_graph["Date"],
-                                                    #     y=df_graph[
-                                                    #         "MSCI EAFE Index Fund (ETF)"
-                                                    #     ],
-                                                    #     line={"color": "#b5b5b5"},
-                                                    #     mode="lines",
-                                                    #     name="MSCI EAFE Index Fund (ETF)",
-                                                    # ),
-                                                ],
-                                                "layout": go.Layout(
-                                                    autosize=True,
-                                                     width=340,
-                                                     height=200,
-                                                    font={"family": "Raleway", "size": 10},
-                                                    margin={
-                                                        "r": 30,
-                                                        "t": 30,
-                                                        "b": 30,
-                                                        "l": 30,
-                                                    },
-                                                    showlegend=False,
-                                                    titlefont={
-                                                        "family": "Raleway",
-                                                        "size": 10,
-                                                    },
-                                                    xaxis={
-                                                        "autorange": True,
-                                                        "range": [
-                                                            "2007-12-31",
-                                                            "2018-03-06",
-                                                        ],
-                                                        "rangeselector": {
-                                                            "buttons": [
-                                                                {
-                                                                    "count": 5,
-                                                                    "label": "5Y",
-                                                                    "step": "year",
-                                                                    "stepmode": "backward",
-                                                                },
-                                                                {
-                                                                    "count": 10,
-                                                                    "label": "10Y",
-                                                                    "step": "year",
-                                                                    "stepmode": "backward",
-                                                                },
-                                                                {
-                                                                    "count": 15,
-                                                                    "label": "15Y",
-                                                                    "step": "year",
-                                                                },
-                                                                {
-                                                                    "count": 20,
-                                                                    "label": "20Y",
-                                                                    "step": "year",
-                                                                    "stepmode": "backward",
-                                                                },
-                                                                {
-                                                                    "label": "All",
-                                                                    "step": "all",
-                                                                },
-                                                            ]
-                                                        },
-                                                        "showline": False,
-                                                        "type": "date",
-                                                        "zeroline": False,
-                                                    },
-                                                    yaxis={
-                                                        "autorange": True,
-                                                        "range": [
-                                                            18.6880162434,
-                                                            278.431996757,
-                                                        ],
-                                                        "showline": False,
-                                                        "type": "linear",
-                                                        "zeroline": False,
-                                                    },
-                                                ),
-                                            },
-                                            config={"displayModeBar": False},
-                                        ),
-                                        html.P(html.A("Source: World Bank", href='https://data.worldbank.org/indicator/SE.ADT.LITR.ZS?end=2021&locations=MZ-ZA&name_desc=false&start=1980&view=chart', target="_blank", style={"font-size": "10px", "color": "#888"})),
+                                        # html.H6("Literacy rate, adult total (% of people ages 15 and above)", className="subtitle padded"),
+                                        # dcc.Graph(
+                                        #     id="graph-2",
+                                        #     figure={
+                                        #         "data": [
+                                        #             go.Scatter(
+                                        #                 x=years_litr,
+                                        #                 y=litr_values,
+                                        #                 line={"color": "#97151c"},
+                                        #                 mode="lines+markers",
+                                        #                 name="",
+                                        #             ),
+                                        #             # go.Scatter(
+                                        #             #     x=df_graph["Date"],
+                                        #             #     y=df_graph[
+                                        #             #         "MSCI EAFE Index Fund (ETF)"
+                                        #             #     ],
+                                        #             #     line={"color": "#b5b5b5"},
+                                        #             #     mode="lines",
+                                        #             #     name="MSCI EAFE Index Fund (ETF)",
+                                        #             # ),
+                                        #         ],
+                                        #         "layout": go.Layout(
+                                        #             autosize=True,
+                                        #              width=340,
+                                        #              height=200,
+                                        #             font={"family": "Raleway", "size": 10},
+                                        #             margin={
+                                        #                 "r": 30,
+                                        #                 "t": 30,
+                                        #                 "b": 30,
+                                        #                 "l": 30,
+                                        #             },
+                                        #             showlegend=False,
+                                        #             titlefont={
+                                        #                 "family": "Raleway",
+                                        #                 "size": 10,
+                                        #             },
+                                        #             xaxis={
+                                        #                 "autorange": True,
+                                        #                 "range": [
+                                        #                     "2007-12-31",
+                                        #                     "2018-03-06",
+                                        #                 ],
+                                        #                 "rangeselector": {
+                                        #                     "buttons": [
+                                        #                         {
+                                        #                             "count": 5,
+                                        #                             "label": "5Y",
+                                        #                             "step": "year",
+                                        #                             "stepmode": "backward",
+                                        #                         },
+                                        #                         {
+                                        #                             "count": 10,
+                                        #                             "label": "10Y",
+                                        #                             "step": "year",
+                                        #                             "stepmode": "backward",
+                                        #                         },
+                                        #                         {
+                                        #                             "count": 15,
+                                        #                             "label": "15Y",
+                                        #                             "step": "year",
+                                        #                         },
+                                        #                         {
+                                        #                             "count": 20,
+                                        #                             "label": "20Y",
+                                        #                             "step": "year",
+                                        #                             "stepmode": "backward",
+                                        #                         },
+                                        #                         {
+                                        #                             "label": "All",
+                                        #                             "step": "all",
+                                        #                         },
+                                        #                     ]
+                                        #                 },
+                                        #                 "showline": False,
+                                        #                 "type": "date",
+                                        #                 "zeroline": False,
+                                        #             },
+                                        #             yaxis={
+                                        #                 "autorange": True,
+                                        #                 "range": [
+                                        #                     18.6880162434,
+                                        #                     278.431996757,
+                                        #                 ],
+                                        #                 "showline": False,
+                                        #                 "type": "linear",
+                                        #                 "zeroline": False,
+                                        #             },
+                                        #         ),
+                                        #     },
+                                        #     config={"displayModeBar": False},
+                                        # ),
+                                        # html.P(html.A("Source: World Bank", href='https://data.worldbank.org/indicator/SE.ADT.LITR.ZS?end=2021&locations=MZ-ZA&name_desc=false&start=1980&view=chart', target="_blank", style={"font-size": "10px", "color": "#888"})),
 
                                 ],
                                     className="six columns"
@@ -255,6 +258,7 @@ def create_layout(app):
                         ],
                                 #className="row",
                     ),
+                    
                     # Row 2
                     html.Div(
                         [
@@ -359,6 +363,8 @@ def create_layout(app):
                         ],
                         className="row ",
                     ),
+                    html.H6("Quarterly Reported Indicators", style={'margin-bottom': '0'}), # Header above Horizontal Line
+                    html.Hr(style={'margin-top': '0', 'margin-bottom': '0'}), # Horizontal line with no top margin
                     # Row 3
                     html.Div(
                         [
@@ -411,6 +417,8 @@ def create_layout(app):
                         ],
                         className="row ",
                     ),
+                    html.H6("Monthly Reported Indicators", style={'margin-bottom': '0'}), # Header above Horizontal Line
+                    html.Hr(style={'margin-top': '0', 'margin-bottom': '0'}), # Horizontal line with no top margin
                     # Row 5
                     html.Div(
                         [
