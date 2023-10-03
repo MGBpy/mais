@@ -105,11 +105,6 @@ def get_menu():
                 href="/mais/decentralization",
                 className="tab",
             ),
-            dcc.Link(
-                "Notes",
-                href="/mais/notes",
-                className="tab",
-            ),
         ],
         className="row all-tabs",
     )
