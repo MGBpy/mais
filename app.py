@@ -20,7 +20,6 @@ from pages import (
     infrastructure,
     security,
     decentralization,
-    notes
 )
 
 app = dash.Dash(
@@ -80,8 +79,6 @@ def display_page(pathname):
         return security.create_layout(app)
     elif pathname == "/mais/decentralization":
         return decentralization.create_layout(app)
-    elif pathname == "/mais/notes":
-        return notes.create_layout(app)
     elif pathname == "/mais/full-view":
         return (
             economic.create_layout(app),
@@ -91,7 +88,6 @@ def display_page(pathname):
             infrastructure.create_layout(app),
             security.create_layout(app),
             decentralization.create_layout(app),
-            notes.create_layout(app),
         )
     else:
         return economic.create_layout(app)
